@@ -4,7 +4,7 @@
 
 
 constexpr int SECTION_POINTS = 10;
-constexpr int MAP_LENGTH = 1000;
+constexpr int MAP_LENGTH = 4000;
 constexpr int DIST_MIN = 100;
 constexpr int DIST_MAX = 120;
 constexpr int DIST_TRACK = 90;

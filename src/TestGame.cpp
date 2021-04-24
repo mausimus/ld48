@@ -4,11 +4,17 @@
 TestGame::TestGame() : Game()
 {
     m_map.Generate();
-    playerX = 0;
-    playerY = 0;
-    playerZ = 0;
-    vX = vY = vZ = 0;
-    leanX = 0;
+    playerX        = 0;
+    playerY        = 0;
+    playerZ        = 0;
+    brakeAmount    = 1.0f;
+    weightAmount   = 0;
+    weightForce    = 0;
+    speed          = 0;
+    netInertia     = 0;
+    grossInertia   = 0;
+    trackSlope     = 0;
+    trackCurvature = 0;
 }
 
 void TestGame::CreateScreens()
@@ -17,10 +23,6 @@ void TestGame::CreateScreens()
     m_screens.push_back(new TestScreen(sn++, this));
 }
 
-void TestGame::OnTick(double deltaTime, double totalTime)
-{    
-}
+void TestGame::OnTick(double deltaTime, double totalTime) { }
 
-void TestGame::OnSwitchScreen(int prevScreen, int nextScreen)
-{    
-}
+void TestGame::OnSwitchScreen(int prevScreen, int nextScreen) { }

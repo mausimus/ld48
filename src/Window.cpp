@@ -62,7 +62,7 @@ void UpdateRenderSize(Rectangle& renderRect)
 int main()
 {
     srand(48);
-    
+
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth * initialScale, screenHeight * initialScale, WINDOW_TITLE);
     InitAudioDevice();

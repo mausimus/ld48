@@ -15,10 +15,10 @@ constexpr int viewBottom  = viewCenterY + (viewHeight / 2);
 constexpr int hudLeft = viewLeft;
 constexpr int hudTop = viewBottom + 10;
 
-constexpr int mapTop = 5;
+constexpr int mapTop = 25;
 constexpr int mapLeft = 260;
 constexpr int mapWidth = 50;
-constexpr int mapHeight = 148;
+constexpr int mapHeight = 160;
 
 constexpr int trainTop = viewBottom + 11;
 constexpr int trainLeft = 190;
@@ -29,14 +29,20 @@ constexpr int train2Left = 60;
 constexpr int barsStart = trainTop + 2;
 constexpr int barsHeight = 8;
 
+constexpr int timerTop = 5;
+constexpr int timerLeft = mapLeft;
+
 class TestScreen : public Screen
 {
 protected:
     void DrawMap();
     void DrawTrain();
     void DrawTimer();
+    void DrawBar(int center, int top, int height, int width, float value);
 
     float raceTime;
+    float raceStart;
+    bool raceStarted;
 
 public:
     TestScreen(int no, TestGame* game);

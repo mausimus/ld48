@@ -23,6 +23,17 @@ public:
     float playerY;
     float playerZ;
 
+    float brakeAmount;
+    float weightAmount;
+
+    float weightForce;
+
+    float speed; // based on acceleration (slope + brakeAmount)
+
+    float grossInertia; // curvature * speed
+    float netInertia; // curvature * speed - weightAmount
+
+/*
     float aX;
     float aY;
     float aZ;
@@ -31,7 +42,7 @@ public:
     float leanX;
     float vY;
     float vZ; // our velocity    
-
+*/
     float trackCurvature;
     float trackSlope;
 

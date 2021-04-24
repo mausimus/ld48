@@ -81,7 +81,7 @@ void Map::Generate()
         auto isFork = false; //(i == 30);
         m_sections[i].Continue(&m_sections[i - 1], isFork);
         m_sections[i].m_dx  = 50.0f * sin(i / 50.0f);
-        m_sections[i].m_dy  = 50.0f * cos(M_PI_2 + i / 50.0f);
+        m_sections[i].m_dy  = 50.0f * (cos(i / 50.0f) - 1.0f) - i * 0.1f /* constant downhill */;
         m_sections[i].m_ecc = 2.0f; // + 0.5f * sin(M_PI_2 + i / 50.0f);
 
         if(i % 50 == 0)
