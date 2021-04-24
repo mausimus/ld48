@@ -5,8 +5,10 @@
 class Assets
 {
 public:
-    Texture2D spriteTexture;
+    Texture2D minerTexture;
     Texture2D wallsTexture;
+    Texture2D cartTexture;
+    Texture2D cartSprite;
     Color palette[64];
     Color walls[14];
 

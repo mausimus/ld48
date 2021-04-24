@@ -23,11 +23,13 @@ Assets::Assets()
 
 void Assets::Load()
 {
-    spriteTexture = LoadTexture("resources/sprite.png");
+    minerTexture = LoadTexture("resources/miner.png");
     wallsTexture = LoadTexture("resources/walls.png");
+    cartTexture = LoadTexture("resources/cart.png");
+    cartSprite = LoadTexture("resources/cart-sprite.png");
 }
 
 void Assets::Unload()
 {
-    UnloadTexture(spriteTexture);
+    UnloadTexture(minerTexture);
 }

@@ -7,6 +7,10 @@ constexpr float PLAYER_X_SPEED = 10.0f;
 constexpr float PLAYER_Y_SPEED = 10.0f;
 constexpr float PLAYER_Z_SPEED = 25.0f;
 
+constexpr float MAX_SPEED = 50.0f;
+
+constexpr float LEAN_MAX = 20.0f;
+
 class TestGame : public Game
 {
 protected:
@@ -19,9 +23,17 @@ public:
     float playerY;
     float playerZ;
 
-    float vX;
+    float aX;
+    float aY;
+    float aZ;
+
+    float vX; // lean velocity?
+    float leanX;
     float vY;
-    float vZ;
+    float vZ; // our velocity    
+
+    float trackCurvature;
+    float trackSlope;
 
     Map m_map;
     TestGame();

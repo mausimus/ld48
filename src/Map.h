@@ -30,6 +30,8 @@ public:
     float       m_dx;
     float       m_dy;
     float       m_ecc;
+    bool        m_hasMiner;
+    bool        m_hasSwitch;
 
     void New();
     void Continue(Section* previous, bool startFork);

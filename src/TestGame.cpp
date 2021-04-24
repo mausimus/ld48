@@ -8,6 +8,7 @@ TestGame::TestGame() : Game()
     playerY = 0;
     playerZ = 0;
     vX = vY = vZ = 0;
+    leanX = 0;
 }
 
 void TestGame::CreateScreens()
