@@ -13,6 +13,8 @@ constexpr float LEAN_MAX = 20.0f;
 
 constexpr int MAX_MINERS = 6;
 
+constexpr int MAX_INERTIA = 2.0f;
+
 class TestGame : public Game
 {
 protected:
@@ -42,6 +44,13 @@ public:
 
     int rescuedMiners;
 
+    bool isPaused;
+
+    float raceTime;
+    bool raceStarted;
+
     Map m_map;
     TestGame();
+
+    void Reset();
 };

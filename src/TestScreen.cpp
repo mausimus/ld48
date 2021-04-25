@@ -26,8 +26,7 @@ void TestScreen::Load()
 
 void TestScreen::Enter()
 {
-    raceTime    = 0;
-    raceStarted = false;
+    message = 1;
 }
 
 void TestScreen::Exit() { }
@@ -40,22 +39,42 @@ void TestScreen::Unload()
 
 void TestScreen::Tick(double deltaTime, double totalTime)
 {
+    if(m_game->isPaused)
+    {
+        if(message == MESSAGE_START)
+        {
+            if(IsKeyPressed(KEY_A) || IsKeyPressed(KEY_ENTER))
+            {
+                message          = 0;
+                m_game->isPaused = false;                
+            }    
+        }
+        else if(IsKeyPressed(KEY_ENTER))
+        {
+            // restart
+            m_game->Reset();
+            message = MESSAGE_START;
+        }
+        return;
+    }
+
     if(IsKeyPressed(KEY_S))
         showStats = !showStats;
 
     m_game->isDucking = IsKeyDown(KEY_DOWN);
 
-    if(raceStarted)
-        raceTime = totalTime - raceStart;
+    if(m_game->raceStarted)
+        m_game->raceTime += deltaTime;
 
     // A and Z control *BRAKE* amount
     if(IsKeyDown(KEY_A))
     {
         m_game->brakeAmount -= 0.05f;
-        raceStarted = true;
-        raceStart   = totalTime;
+        m_game->raceStarted = true;
+        m_game->raceTime    = 0;
+        //raceStart   = totalTime;
     }
-    else if(raceStarted)
+    else if(m_game->raceStarted)
     {
         // auto release
         m_game->brakeAmount -= 0.05f;
@@ -133,70 +152,22 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         m_game->netInertia *= 0.5;
     }
 
-    /*    if(IsKeyDown(KEY_LEFT))
-    {
-        if(m_game->weightAmount < 0)
-        {
-            // already fixed
-        }
-        else if(m_game->grossInertia > 0)
-        {
-            // once you press left, it fixes right inertia at that max level
-            m_game->weightAmount = -m_game->grossInertia;
-        }
-    }
-    else if(IsKeyDown(KEY_RIGHT))
-    {
-        if(m_game->weightAmount > 0)
-        {
-            // already fixed
-        }
-        else if(m_game->grossInertia < 0)
-        {
-            // once you press left, it fixes right inertia at that max level
-            m_game->weightAmount = -m_game->grossInertia;
-        }
-    }
-    else
-    {
-        m_game->weightAmount = 0;
-    }
-
-    if(m_game->weightAmount > 0 && m_game->grossInertia < 0)
-    {
-        m_game->netInertia = -m_game->weightAmount;
-    }
-    else if(m_game->weightAmount < 0 && m_game->grossInertia > 0)
-    {
-        m_game->netInertia = -m_game->weightAmount;
-    }
-    else
-    {
-        m_game->netInertia = m_game->grossInertia;
-    }*/
-
-    //    m_game->netInertia
-    //m_game->netInertia = fabsf(m_game->speed * m_game->speed) * (m_game->trackCurvature + m_game->weightAmount * 0.1f);
-
-    //    m_game->grossInertia = fabsf(m_game->speed) * m_game->trackCurvature;
-    //    m_game->netInertia = fabsf(m_game->speed) * (m_game->trackCurvature + m_game->weightAmount * 0.1f);
-
     // move forward - based on NET speed
     auto prevPosition = m_game->playerZ;
     m_game->playerZ += deltaTime * m_game->speed;
     if(m_game->playerZ < 0)
-        m_game->playerZ = 0;        
+        m_game->playerZ = 0;
 
-    // play track sounds?    
+    // play track sounds?
     auto intPosition = static_cast<int>(m_game->playerZ);
     if(static_cast<int>(prevPosition) != intPosition)
     {
         // we moved into new pos
-        if(intPosition % 7 == 0)
+        if(intPosition % 7 == 3)
         {
             PlaySoundMulti(Assets()->tracks2);
         }
-        else if(intPosition % 7 == 5)
+        else if(intPosition % 7 == 1)
         {
             PlaySoundMulti(Assets()->tracks1);
         }
@@ -236,6 +207,17 @@ void TestScreen::Tick(double deltaTime, double totalTime)
                 }
             }
         }
+    }
+
+    if(fabsf(m_game->netInertia) > MAX_INERTIA)
+    {
+        message          = MESSAGE_OVERTURN;
+        m_game->isPaused = true;
+    }
+    if(firstSection.m_isBroken && !m_game->isDucking)
+    {
+        message = MESSAGE_HITBEAM;
+        m_game->isPaused = true;
     }
 }
 
@@ -389,12 +371,92 @@ void TestScreen::DrawShapes()
 
     DrawTexture(Assets()->cartTexture, 0, 0, WHITE);
     if(m_game->isDucking)
-        DrawTexture(Assets()->duckTexture, 0, 0, WHITE);      
+        DrawTexture(Assets()->duckTexture, 0, 0, WHITE);
 
     DrawMap();
     DrawTrain();
     DrawTimer();
     DrawMiners();
+
+    DrawMessage();
+}
+
+void TestScreen::DrawMessage()
+{
+    if(message == 0)
+        return;
+
+    Rectangle wrappingRectangle {15, 15, screenWidth - 80, screenHeight - 40};
+    Rectangle textRectangle {wrappingRectangle.x + 5, wrappingRectangle.y + 5, wrappingRectangle.width - 10, wrappingRectangle.height - 10};
+    DrawRectangleRec(wrappingRectangle, DARKGRAY);
+
+    switch(message)
+    {
+    case MESSAGE_START:
+        DrawTextRec(font,
+                    "Welcome to Miner Rescue!\n"
+                    "Escape from a collapsing mine and rescue your friends on the way!\n\n"
+                    "A/Z - handbrake\n"
+                    "Down - duck\n"
+                    "Left/Right - shift weight\n\n"
+                    "Don't roll your cart and don't hit anything!\n\n"
+                    "Press A to release the handbrake!",
+                    textRectangle,
+                    8,
+                    1,
+                    true,
+                    WHITE);
+        break;
+    case MESSAGE_OVERTURN:
+        DrawTextRec(font,
+                    "Oh no, you overturned your cart!\n\n"
+                    "Next time don't go too fast and shift weight to counter intertia.\n\n"
+                    "Enter - try again\nEscape - quit",
+                    textRectangle,
+                    8,
+                    1,
+                    true,
+                    WHITE);
+        break;
+    case MESSAGE_HITBEAM:
+        DrawTextRec(font,
+                    "Oh no, you hit a support beam!\n\n"
+                    "Next time duck when you see any obstacles!\n\n"
+                    "Enter - try again\nEscape - quit",
+                    textRectangle,
+                    8,
+                    1,
+                    true,
+                    WHITE);
+        break;
+    case MESSAGE_FINISH:
+        if(m_game->rescuedMiners)
+        {
+            DrawTextRec(font,
+                        "Congratulations, you've gotten out and saved some friends!\n\n"
+                        "Enter - try again\nEscape - quit",
+                        textRectangle,
+                        8,
+                        1,
+                        true,
+                        WHITE);
+        }
+        else
+        {
+            DrawTextRec(font,
+                        "Well, you've gotten out but didn't save anyone else! How selfish!\n\n"
+                        "Back to the mine!\n\n"
+                        "Press Enter to start again or Escape to quit.",
+                        textRectangle,
+                        8,
+                        1,
+                        true,
+                        WHITE);
+        }
+        break;
+    default:
+        break;
+    }
 }
 
 void TestScreen::DrawMap()
@@ -436,9 +498,7 @@ void TestScreen::DrawMap()
         }
     }
 
-    //DrawTextureRec(Assets()->cartSprite, (Rectangle){72, 0, 14, 11}, (Vector2){cartX - 7, cartY - 6}, WHITE);
-    DrawPixelV((Vector2) {cartX, cartY}, MAROON);
-    DrawPixelV((Vector2) {cartX + 1, cartY}, MAROON);
+    DrawTextureRec(Assets()->cartSprite, (Rectangle) {96, 0, 6, 6}, (Vector2) {cartX - 3, cartY - 3}, WHITE);
 }
 
 void TestScreen::DrawBar(int center, int top, int height, int width, float value)
@@ -517,7 +577,7 @@ void TestScreen::DrawTrain()
 
 void TestScreen::DrawTimer()
 {
-    auto elapsedMilliseconds = static_cast<int>(raceTime * 1000);
+    auto elapsedMilliseconds = static_cast<int>(m_game->raceTime * 1000);
     char timeString[15];
     sprintf(timeString, "%.2d:%.2d:%.3d", elapsedMilliseconds / 60000, (elapsedMilliseconds / 1000) % 60, elapsedMilliseconds % 1000);
     DrawTextEx(font, timeString, (Vector2) {timerLeft, timerTop}, 8, 1, WHITE);

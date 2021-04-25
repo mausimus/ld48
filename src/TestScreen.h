@@ -33,6 +33,11 @@ constexpr int barLength = 20;
 constexpr int timerTop = 5;
 constexpr int timerLeft = mapLeft;
 
+const int MESSAGE_START = 1;
+const int MESSAGE_OVERTURN = 2;
+const int MESSAGE_HITBEAM = 3;
+const int MESSAGE_FINISH = 4;
+
 class TestScreen : public Screen
 {
 protected:
@@ -41,10 +46,12 @@ protected:
     void DrawTrain();
     void DrawTimer();
     void DrawBar(int center, int top, int height, int width, float value);
+    void DrawMessage();
 
-    float raceTime;
-    float raceStart;
-    bool raceStarted;
+    //float raceTime;
+    //float raceStart;
+    //bool raceStarted;
+    int message;
 
 public:
     TestScreen(int no, TestGame* game);

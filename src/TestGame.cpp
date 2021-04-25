@@ -3,6 +3,11 @@
 
 TestGame::TestGame() : Game()
 {
+    Reset();
+}
+
+void TestGame::Reset()
+{
     m_map.Generate();
     playerX        = 0;
     playerY        = 0;
@@ -16,7 +21,10 @@ TestGame::TestGame() : Game()
     trackSlope     = 0;
     trackCurvature = 0;
     rescuedMiners  = 0;
-    isDucking = false;
+    isDucking      = false;
+    isPaused       = true;
+    raceStarted    = false;
+    raceTime       = 0;
 }
 
 void TestGame::CreateScreens()
