@@ -63,7 +63,7 @@ void Game::DrawShapes()
 {
     m_activeScreen->DrawShapes();
 
-    DrawCircle(m_mouseX, m_mouseY, 5, MAROON); // mouse cursor
+    //DrawCircle(m_mouseX, m_mouseY, 5, MAROON); // mouse cursor
 }
 
 void Game::SwitchScreen(int sc)

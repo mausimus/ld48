@@ -38,7 +38,7 @@ void TestScreen::Unload()
 }
 
 void TestScreen::Tick(double deltaTime, double totalTime)
-{
+{   
     if(m_game->isPaused)
     {
         if(message == MESSAGE_START)
@@ -46,8 +46,8 @@ void TestScreen::Tick(double deltaTime, double totalTime)
             if(IsKeyPressed(KEY_A) || IsKeyPressed(KEY_ENTER))
             {
                 message          = 0;
-                m_game->isPaused = false;                
-            }    
+                m_game->isPaused = false;
+            }
         }
         else if(IsKeyPressed(KEY_ENTER))
         {
@@ -69,7 +69,7 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     // A and Z control *BRAKE* amount
     if(IsKeyDown(KEY_A))
     {
-        m_game->brakeAmount -= 0.05f;
+        m_game->brakeAmount -= 0.05f * frameSkip;
         m_game->raceStarted = true;
         m_game->raceTime    = 0;
         //raceStart   = totalTime;
@@ -77,35 +77,15 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     else if(m_game->raceStarted)
     {
         // auto release
-        m_game->brakeAmount -= 0.05f;
+        m_game->brakeAmount -= 0.05f * frameSkip;
     }
 
     if(IsKeyDown(KEY_Z))
-        m_game->brakeAmount += 0.25f;
+        m_game->brakeAmount += 0.25f * frameSkip;
     if(m_game->brakeAmount > 1)
         m_game->brakeAmount = 1;
     if(m_game->brakeAmount < 0)
         m_game->brakeAmount = 0;
-
-    // left and right move WEIGHT: as you hold direction it increases
-    /*if(IsKeyDown(KEY_LEFT))
-    {
-        m_game->weightForce -= 0.1f;
-    } else if(IsKeyDown(KEY_RIGHT))
-    {
-        m_game->weightForce += 0.1f;
-    } else 
-    {
-        m_game->weightForce = 0;
-    }
-    if(m_game->weightForce < -1)
-        m_game->weightForce = -1;
-    if(m_game->weightForce > 1)
-        m_game->weightForce = 1;
-
-    // by 10
-    m_game->weightAmount += m_game->weightForce / 10.0f;
-    m_game->weightAmount *= 0.9f;*/
 
     if(m_game->weightAmount > 1.0f)
         m_game->weightAmount = 1.0f;
@@ -116,40 +96,43 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     m_game->speed += netAccel; // speed
     if(m_game->speed > 0)
     {
-        m_game->speed -= m_game->brakeAmount * 0.5f;
+        m_game->speed -= m_game->brakeAmount * 0.5f * frameSkip;
         if(m_game->speed < 0)
             m_game->speed = 0;
     }
     else
     {
-        m_game->speed += m_game->brakeAmount * 0.5f;
+        m_game->speed += m_game->brakeAmount * 0.5f * frameSkip;
         if(m_game->speed > 0)
             m_game->speed = 0;
     }
 
     // fixed friction
-    m_game->speed *= 0.9999f;
+    for(int s = 0; s < frameSkip; s++)
+        m_game->speed *= 0.9999f;
 
-    m_game->grossInertia = fabsf(m_game->speed /** m_game->speed*/) * m_game->trackCurvature;
+    m_game->grossInertia = fabsf(m_game->speed * m_game->speed / 100.0f) * m_game->trackCurvature;
 
     m_game->weightAmount = 0;
     if(IsKeyDown(KEY_LEFT))
     {
-        m_game->weightAmount -= 1;
+        m_game->weightAmount -= 1 * frameSkip;
     }
     if(IsKeyDown(KEY_RIGHT))
     {
-        m_game->weightAmount = 1;
+        m_game->weightAmount = 1 * frameSkip;
     }
 
     m_game->netInertia = m_game->grossInertia;
     if(m_game->grossInertia > 0 && m_game->weightAmount < 0)
     {
-        m_game->netInertia *= 0.5;
+        for(int s = 0; s < frameSkip; s++)
+            m_game->netInertia *= 0.5;
     }
     else if(m_game->grossInertia < 0 && m_game->weightAmount > 0)
     {
-        m_game->netInertia *= 0.5;
+        for(int s = 0; s < frameSkip; s++)
+            m_game->netInertia *= 0.5;
     }
 
     // move forward - based on NET speed
@@ -214,9 +197,9 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         message          = MESSAGE_OVERTURN;
         m_game->isPaused = true;
     }
-    if(firstSection.m_isBroken && !m_game->isDucking)
+    if(secondSection.m_isBroken && !m_game->isDucking)
     {
-        message = MESSAGE_HITBEAM;
+        message          = MESSAGE_HITBEAM;
         m_game->isPaused = true;
     }
 }
@@ -241,34 +224,21 @@ float PerspectiveScale(float distance)
     if(distance <= 0)
         return 0;
 
-    //return 1.0f / distance;
     return 1.0f / (0.75f + (distance / 4.0f));
 }
-
-/*float PerspectiveOffset(float offset)
-{
-    if(distance <= 0)
-        return 0;
-
-    //return 1.0f / distance;
-    return 1.0f / (0.5f + (distance / 2.0f));
-}*/
 
 void TestScreen::DrawShapes()
 {
     animator.Play();
 
     // player location will be a float
-
     int centerY = viewCenterY;
 
     Vector2 fan[SECTION_POINTS + 2];
-    if(rand() % 4 == 0)
+    if(!m_game->isPaused && rand() % 4 == 0)
     {
         centerY += rand() % 2;
     }
-
-    //DrawPixel(viewCenterX, viewCenterY, GREEN);
 
     // we draw 14 sections from player location forward
     auto drawStart = static_cast<int>(m_game->playerZ) + 1;
@@ -302,7 +272,7 @@ void TestScreen::DrawShapes()
         leftTracks.push_back(leftTrack);
         rightTracks.push_back(rightTrack);
 
-        std::vector<Vector2> supportsPosition(4);
+        std::vector<Vector2> supportsPosition(6);
         section.SupportsPosition(supportsPosition.data(), adjustedCenterX, adjustedCenterY, scale, section.m_ecc);
         supports.push_back(supportsPosition);
 
@@ -315,20 +285,44 @@ void TestScreen::DrawShapes()
     int numSections = drawEnd - drawStart - 1;
     for(int i = 0; i < numSections; i++)
     {
-        int thickNess = 1 + (drawDistance - i) / 6;
-        DrawLineEx(leftBars[i], rightBars[i], thickNess, BROWN);
+        int  thickNess = 1 + (drawDistance - i) / 6;
+        auto color     = Assets()->palette[56];
+        if(i < 5)
+        {
+            color.r *= 1.3f;
+            color.g *= 1.3f;
+            color.b *= 1.3f;
+        }
+        DrawLineEx(leftBars[i], rightBars[i], thickNess, color);
     }
 
     for(int i = 0; i < numSections; i++)
     {
-        DrawLineEx(leftTracks[i], leftTracks[i + 1], 1 + (numSections - i) / 3, GRAY);
-        DrawLineEx(rightTracks[i], rightTracks[i + 1], 1 + (numSections - i) / 3, GRAY);
+        auto trackColor = Assets()->palette[1];
+        if(i < 5)
+        {
+            trackColor.r *= 1.3f;
+            trackColor.g *= 1.3f;
+            trackColor.b *= 1.3f;
+        }
+
+        DrawLineEx(leftTracks[i], leftTracks[i + 1], 1 + (numSections - i) / 3, trackColor);
+        DrawLineEx(rightTracks[i], rightTracks[i + 1], 1 + (numSections - i) / 3, trackColor);
         if((drawStart + i) % 10 == 0)
         {
-            int thickNess = 1 + (drawDistance - i);
-            DrawLineEx(supports[i][0], supports[i][1], thickNess, MAROON);
-            DrawLineEx(supports[i][1], supports[i][2], thickNess, MAROON);
-            DrawLineEx(supports[i][2], supports[i][3], thickNess, MAROON);
+            int  thickNess = 1 + (drawDistance - i);
+            auto color     = Assets()->palette[56];
+            if(i < 5)
+            {
+                color.r *= 1.3f;
+                color.g *= 1.3f;
+                color.b *= 1.3f;
+            }
+            DrawLineEx(supports[i][0], supports[i][1], thickNess, color);
+            DrawLineEx(supports[i][1], supports[i][2], thickNess, color);
+            DrawLineEx(supports[i][2], supports[i][3], thickNess, color);
+            DrawLineEx(supports[i][3], supports[i][4], thickNess, color);
+            DrawLineEx(supports[i][4], supports[i][5], thickNess, color);
         }
     }
 
@@ -340,7 +334,8 @@ void TestScreen::DrawShapes()
         {
             //DrawPixel(leftTracks[i].x, leftTracks[i].y, GREEN);
             //DrawTextureRec(animator.GetSprite(), animator.GetFrameRec(), (Vector2){leftTracks[i].x, leftTracks[i].y - 32}, WHITE);
-            auto size = ((64 - (i * 4)) >> 1) << 1;
+            //auto size = ((64 - (i * 4)) >> 1) << 1;
+            auto size = 64 * PerspectiveScale(i - a); // ((64 - (i * 4)) >> 1) << 1;
             DrawTexturePro(animator.GetSprite(),
                            animator.GetFrameRec(),
                            (Rectangle) {leftTracks[i].x, leftTracks[i].y - size, size, size},
@@ -379,6 +374,7 @@ void TestScreen::DrawShapes()
     DrawMiners();
 
     DrawMessage();
+    DrawStats();
 }
 
 void TestScreen::DrawMessage()
@@ -531,6 +527,22 @@ void TestScreen::DrawMiners()
     }
 }
 
+void TestScreen::DrawStats()
+{
+    if(showStats)
+    {
+        DrawTextEx(font, (std::string("Slope = ") + std::to_string(m_game->trackSlope)).c_str(), (Vector2) {14, 14 * 3}, 8, 1, WHITE);
+        DrawTextEx(font, (std::string("Brake = ") + std::to_string(m_game->brakeAmount)).c_str(), (Vector2) {14, 14 * 4}, 8, 1, WHITE);
+        DrawTextEx(font, (std::string("Speed = ") + std::to_string(m_game->speed)).c_str(), (Vector2) {14, 14 * 5}, 8, 1, WHITE);
+
+        DrawTextEx(font, (std::string("Curv = ") + std::to_string(m_game->trackCurvature)).c_str(), (Vector2) {14, 14 * 6}, 8, 1, WHITE);
+        DrawTextEx(font, (std::string("GrossI = ") + std::to_string(m_game->grossInertia)).c_str(), (Vector2) {14, 14 * 7}, 8, 1, WHITE);
+        DrawTextEx(font, (std::string("Weight = ") + std::to_string(m_game->weightAmount)).c_str(), (Vector2) {14, 14 * 9}, 8, 1, WHITE);
+        DrawTextEx(font, (std::string("NetI = ") + std::to_string(m_game->netInertia)).c_str(), (Vector2) {14, 14 * 8}, 8, 1, WHITE);
+        //DrawTextEx(font, (std::string("Slope = ") + std::to_string(weightForce)).c_str(), (Vector2){14, 14 * 10}, 8, 1, WHITE);
+    }
+}
+
 void TestScreen::DrawTrain()
 {
     float slope = m_game->trackSlope;
@@ -542,19 +554,6 @@ void TestScreen::DrawTrain()
     float netInertia   = m_game->netInertia;
     float weightAmount = m_game->weightAmount;
     float weightForce  = m_game->weightForce;
-
-    if(showStats)
-    {
-        DrawTextEx(font, (std::string("Slope = ") + std::to_string(slope)).c_str(), (Vector2) {14, 14 * 3}, 8, 1, WHITE);
-        DrawTextEx(font, (std::string("Brake = ") + std::to_string(brake)).c_str(), (Vector2) {14, 14 * 4}, 8, 1, WHITE);
-        DrawTextEx(font, (std::string("Speed = ") + std::to_string(speed)).c_str(), (Vector2) {14, 14 * 5}, 8, 1, WHITE);
-
-        DrawTextEx(font, (std::string("Curv = ") + std::to_string(curvature)).c_str(), (Vector2) {14, 14 * 6}, 8, 1, WHITE);
-        DrawTextEx(font, (std::string("GrossI = ") + std::to_string(grossInertia)).c_str(), (Vector2) {14, 14 * 7}, 8, 1, WHITE);
-        DrawTextEx(font, (std::string("Weight = ") + std::to_string(weightAmount)).c_str(), (Vector2) {14, 14 * 9}, 8, 1, WHITE);
-        DrawTextEx(font, (std::string("NetI = ") + std::to_string(netInertia)).c_str(), (Vector2) {14, 14 * 8}, 8, 1, WHITE);
-        //DrawTextEx(font, (std::string("Slope = ") + std::to_string(weightForce)).c_str(), (Vector2){14, 14 * 10}, 8, 1, WHITE);
-    }
 
     DrawTexturePro(Assets()->cartSprite,
                    (Rectangle) {0, 0, 24, 24},

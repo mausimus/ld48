@@ -75,7 +75,7 @@ int main()
     for(int q = 0; q < screenSize; q++)
         framebuffer[q] = BLACK;
 #endif
-    HideCursor();
+    //HideCursor();
     game.Start();
     totalTime = GetTime();
 

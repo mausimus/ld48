@@ -1,11 +1,11 @@
 
-* create a decent map
-* paint some extra backgrounds
-* sort out the riding model
-* fix looks of tracks and beams (palette/shading)
-* improve the mine shake/collapsing animations
-* finish end game screen
-* sounds:
+- create a decent map
+- paint some extra backgrounds
+? sort out the riding model
++ fix looks of tracks and beams (palette/shading)
+- improve the mine shake/collapsing animations
+- finish end game screen
+- sounds:
     - approaching miner
     - miner on board
     - releasing the brake

@@ -15,27 +15,45 @@ void Section::SupportsPosition(Vector2 supports[], float cx, float cy, float sca
     float rightTopAngle  = M_PI * 0.2f + M_PI;
     float leftTopAngle   = -M_PI * 0.2f + M_PI;
 
-    supports[0].x = cx + sin(leftAngle) * scaledDistance * excen;
-    supports[0].y = cy + cos(leftAngle) * scaledDistance;
-
-    supports[1].x = cx + sin(leftTopAngle) * scaledDistance * excen;
-    supports[1].y = cy + cos(leftTopAngle) * scaledDistance;
-
-    if(m_isBroken)
+    if(!m_isBroken)
     {
-        supports[3].x = cx + sin(rightTopAngle) * scaledDistance * excen;
+        supports[0].x = cx + sin(leftAngle) * scaledDistance * excen;
+        supports[0].y = cy + cos(leftAngle) * scaledDistance;
+
+        supports[1].x = cx + sin(leftTopAngle) * scaledDistance * excen;
+        supports[1].y = cy + cos(leftTopAngle) * scaledDistance;
+
+        supports[2].x = cx + sin(leftTopAngle) * scaledDistance * excen + 30 * scale;
+        supports[2].y = cy + cos(leftTopAngle) * scaledDistance;
+
+        supports[3].x = cx + sin(rightTopAngle) * scaledDistance * excen - 30 * scale;
         supports[3].y = cy + cos(rightTopAngle) * scaledDistance;
 
-        supports[2].x = cx + sin(rightAngle) * scaledDistance * excen;
-        supports[2].y = cy + cos(rightAngle) * scaledDistance;
+        supports[4].x = cx + sin(rightTopAngle) * scaledDistance * excen;
+        supports[4].y = cy + cos(rightTopAngle) * scaledDistance;
+
+        supports[5].x = cx + sin(rightAngle) * scaledDistance * excen;
+        supports[5].y = cy + cos(rightAngle) * scaledDistance;
     }
     else
     {
-        supports[2].x = cx + sin(rightTopAngle) * scaledDistance * excen;
-        supports[2].y = cy + cos(rightTopAngle) * scaledDistance;
+        supports[0].x = cx + sin(leftAngle) * scaledDistance * excen;
+        supports[0].y = cy + cos(leftAngle) * scaledDistance;
+
+        supports[1].x = cx + sin(leftTopAngle) * scaledDistance * excen;
+        supports[1].y = cy + cos(leftTopAngle) * scaledDistance;
+
+        supports[2].x = cx + sin(leftTopAngle) * scaledDistance * excen;
+        supports[2].y = cy + cos(leftTopAngle) * scaledDistance;
 
         supports[3].x = cx + sin(rightAngle) * scaledDistance * excen;
         supports[3].y = cy + cos(rightAngle) * scaledDistance;
+
+        supports[4].x = cx + sin(rightTopAngle) * scaledDistance * excen;
+        supports[4].y = cy + cos(rightTopAngle) * scaledDistance;
+
+        supports[5].x = cx + sin(rightTopAngle) * scaledDistance * excen;
+        supports[5].y = cy + cos(rightTopAngle) * scaledDistance;
     }
 }
 
@@ -128,7 +146,7 @@ void Map::Generate()
         m_sections[i].Continue(&m_sections[i - 1], isFork);
         m_sections[i].m_dx  = 50.0f * sin(i / 50.0f);
         m_sections[i].m_dy  = 50.0f * (cos(i / 50.0f) - 1.0f) - i * 0.1f /* constant downhill */;
-        m_sections[i].m_ecc = 2.0f; // + 0.5f * sin(M_PI_2 + i / 50.0f);
+        m_sections[i].m_ecc = 2.0f + 0.5f * sin(M_PI_2 + i / 50.0f);// 2.0f; // + 0.5f * sin(M_PI_2 + i / 50.0f);
 
         if(i % 50 == 0)
             m_sections[i].m_hasMiner = true;

@@ -44,6 +44,7 @@ protected:
     void DrawMap();
     void DrawMiners();
     void DrawTrain();
+    void DrawStats();
     void DrawTimer();
     void DrawBar(int center, int top, int height, int width, float value);
     void DrawMessage();

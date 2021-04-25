@@ -11,10 +11,12 @@ constexpr int   screenSize = screenWidth * screenHeight;
 
 #define WINDOW_TITLE "game"
 #define FULLSCREEN_KEY KEY_F
-//#define SCANLINES
+#define SCANLINES
 //#define TEXTURE_FILTER FILTER_BILINEAR
 #define TEXTURE_FILTER FILTER_POINT
-#define TARGET_FPS 60
+#define TARGET_FPS 30
+
+constexpr int frameSkip = 60 / TARGET_FPS;
 
 #define DRAW_PIXELS
 #define DRAW_SHAPES
