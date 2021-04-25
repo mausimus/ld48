@@ -22,6 +22,7 @@ void TestScreen::Load()
     //font          = LoadFont("resources/fonts/alpha_beta.png");
     fxOgg = LoadSound("resources/sound.ogg");
     animator.AssignSprite(Assets()->minerTexture);
+    soundEnabled = true;
 }
 
 void TestScreen::Enter()
@@ -74,6 +75,11 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         return;
     }
 
+    if(IsKeyPressed(KEY_F2))
+    {
+        soundEnabled = !soundEnabled;
+    }
+
     if(IsKeyPressed(KEY_S))
         showStats = !showStats;
 
@@ -85,10 +91,17 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         return;
     }
 
+    // cheats - disable
     if(IsKeyPressed(KEY_L))
     {
         // jump to finish, cheater!
-        m_game->playerZ = MAP_LENGTH - 10;
+        m_game->rescuedMiners = 16;
+        m_game->playerZ       = MAP_LENGTH - 10;
+    }
+    if(IsKeyPressed(KEY_M))
+    {
+        // jump to finish, cheater!
+        m_game->ignoreBeams = true;
     }
 
     m_game->isDucking = IsKeyDown(KEY_DOWN);
@@ -100,9 +113,13 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     if(IsKeyDown(KEY_A))
     {
         m_game->brakeAmount -= 0.05f * frameSkip;
-        m_game->raceStarted = true;
-        m_game->raceTime    = 0;
-        //raceStart   = totalTime;
+        if(!m_game->raceStarted)
+        {
+            m_game->raceStarted = true;
+            m_game->raceTime    = 0;
+            if(soundEnabled)
+                PlaySoundMulti(Assets()->sndStart);
+        }
     }
     else if(m_game->raceStarted)
     {
@@ -111,7 +128,15 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     }
 
     if(IsKeyDown(KEY_Z))
+    {
+        if(soundEnabled)
+            if(!IsSoundPlaying(Assets()->sndBrake) && m_game->speed > 0)
+            {
+                PlaySoundMulti(Assets()->sndBrake);
+            }
         m_game->brakeAmount += 0.25f * frameSkip;
+    }
+
     if(m_game->brakeAmount > 1)
         m_game->brakeAmount = 1;
     if(m_game->brakeAmount < 0)
@@ -141,7 +166,7 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     for(int s = 0; s < frameSkip; s++)
         m_game->speed *= 0.9999f;
 
-    m_game->grossInertia = fabsf(m_game->speed * m_game->speed / 100.0f) * m_game->trackCurvature;
+    m_game->grossInertia = fabsf(m_game->speed * m_game->speed / 80.0f) * m_game->trackCurvature; // was 100
 
     m_game->weightAmount = 0;
     if(IsKeyDown(KEY_LEFT))
@@ -172,19 +197,21 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         m_game->playerZ = 0;
 
     // play track sounds?
-    auto intPosition = static_cast<int>(m_game->playerZ);
-    if(static_cast<int>(prevPosition) != intPosition)
-    {
-        // we moved into new pos
-        if(intPosition % 7 == 3)
+    auto intPosition  = static_cast<int>(m_game->playerZ);
+    auto movedSection = static_cast<int>(prevPosition) != intPosition;
+    if(soundEnabled)
+        if(movedSection)
         {
-            PlaySoundMulti(Assets()->tracks2);
+            // we moved into new pos
+            if(intPosition % 7 == 3)
+            {
+                PlaySoundMulti(Assets()->tracks2);
+            }
+            else if(intPosition % 7 == 1)
+            {
+                PlaySoundMulti(Assets()->tracks1);
+            }
         }
-        else if(intPosition % 7 == 1)
-        {
-            PlaySoundMulti(Assets()->tracks1);
-        }
-    }
 
     // loop
     //if(m_game->playerZ > MAP_LENGTH - 20)
@@ -203,6 +230,12 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     //m_game->trackCurvature = (secondSection.m_dx - firstSection.m_dx) / 10.0f;
     //m_game->trackSlope     = -(secondSection.m_dy - firstSection.m_dy - 0.95f) / 10.0f; // (almost) constant downward
 
+    // missed previous miner?
+    if(soundEnabled)
+        if(drawStart > 5 && m_game->m_map.m_sections[drawStart - 2].m_hasMiner && movedSection)
+        {
+            PlaySoundMulti(Assets()->sndMiss);
+        }
     // are we close to any miners?
     if(m_game->speed == 0)
     {
@@ -215,6 +248,8 @@ void TestScreen::Tick(double deltaTime, double totalTime)
                 {
                     m_game->rescuedMiners++;
                     minerSection.m_hasMiner = false;
+                    if(soundEnabled)
+                        PlaySoundMulti(Assets()->sndMiner);
                 }
                 /*else
                 {
@@ -226,17 +261,32 @@ void TestScreen::Tick(double deltaTime, double totalTime)
 
     if(fabsf(m_game->netInertia) > MAX_INERTIA)
     {
-        message          = MESSAGE_OVERTURN;
+        message = MESSAGE_OVERTURN;
+        if(!m_game->isPaused)
+        {
+            if(soundEnabled)
+                PlaySoundMulti(Assets()->sndCrash);
+        }
         m_game->isPaused = true;
     }
-    if(secondSection.m_isBroken && !m_game->isDucking)
+    if(secondSection.m_isBroken && !m_game->isDucking && !m_game->ignoreBeams)
     {
-        message          = MESSAGE_HITBEAM;
+        message = MESSAGE_HITBEAM;
+        if(!m_game->isPaused)
+        {
+            if(soundEnabled)
+                PlaySoundMulti(Assets()->sndCrash);
+        }
         m_game->isPaused = true;
     }
     if(secondSection.m_isFinish)
     {
-        message          = MESSAGE_FINISH;
+        message = MESSAGE_FINISH;
+        if(!m_game->isPaused && m_game->rescuedMiners > 0)
+        {
+            if(soundEnabled)
+                PlaySoundMulti(Assets()->sndFinish);
+        }
         m_game->isPaused = true;
     }
 }
@@ -274,7 +324,13 @@ void TestScreen::DrawShapes()
     Vector2 fan[SECTION_POINTS + 2];
     if(!m_game->isPaused && rand() % 4 == 0)
     {
-        centerY += rand() % 2;
+        auto randOffset = rand() % 2;
+        if(randOffset != 0)
+        {
+            centerY += randOffset;
+            if(soundEnabled)
+                PlaySoundMulti(Assets()->sndQuake);
+        }
     }
 
     // we draw 14 sections from player location forward
@@ -409,9 +465,9 @@ void TestScreen::DrawShapes()
     // draw handle (45,105 -> 10,115)
     // 36->163
     float factor = floorf(5 * m_game->brakeAmount) / 5.0f;
-    float topX   = 15 + (45 - 15) * factor;
+    float topX   = 4 + 15 + (45 - 15) * factor;
     float topY   = 115 + (105 - 115) * factor;
-    DrawLineEx((Vector2) {topX, topY}, (Vector2) {36, 183}, 5, Assets()->palette[4]);
+    DrawLineEx((Vector2) {topX, topY}, (Vector2) {4 + 36, 183}, 5, Assets()->palette[4]);
 
     //DrawRectangle(hudLeft, hudTop, static_cast<int>(fabsf(m_game->vZ)), 10, RED); // player speed
     //DrawRectangle(hudLeft, hudTop + 10, static_cast<int>(fabsf(m_game->leanX)), 10, YELLOW); // lean
@@ -430,68 +486,84 @@ void TestScreen::DrawShapes()
     DrawStats();
 }
 
+void TestScreen::DrawOutlined(const char* text, Rectangle wrappingRectangle)
+{
+    Rectangle textRectangle {wrappingRectangle.x + 5, wrappingRectangle.y + 5, wrappingRectangle.width - 10, wrappingRectangle.height - 5};
+    //Rectangle outlineRectangle{wrappingRectangle.x - 1, wrappingRectangle.y - 1, wrappingRectangle.width + 2, wrappingRectangle.height+ 2};
+    DrawRectangleRoundedLines(wrappingRectangle, 0.1f, 40, 2, Color{96 - 20, 74 - 15, 67 - 12,255});
+    DrawRectangleRounded(wrappingRectangle, 0.1f, 40, Color{96,74,67,255});
+    //DrawRectangleLines(wrappingRectangle.x - 1, wrappingRectangle.y - 1, wrappingRectangle.width + 2, wrappingRectangle.height+ 2, Color{96 - 20, 74 - 15, 67 - 12,255});
+    //DrawRectangleRec(wrappingRectangle, Color{96,74,67,255});
+
+    DrawTextRec(font, text, textRectangle, 8, 1, true, WHITE);
+}
+
 void TestScreen::DrawMessage()
 {
     if(message == 0)
         return;
 
-    Rectangle wrappingRectangle {15, 15, screenWidth - 80, screenHeight - 40};
-    Rectangle textRectangle {wrappingRectangle.x + 5, wrappingRectangle.y + 5, wrappingRectangle.width - 10, wrappingRectangle.height - 10};
-    DrawRectangleRec(wrappingRectangle, DARKGRAY);
+    //Rectangle fullRectangle {11, 9, screenWidth - 74 - 12, screenHeight - 40 - 8};
+
+    Rectangle fullRectangle {11 - 6, 9 - 4 + 2, screenWidth - 74 - 12 + 12, screenHeight - 40 - 8 + 8};
+
+    Rectangle halfRectangle {11, 9 + (screenHeight - 40 - 8) / 2, screenWidth - 74 - 12, (screenHeight - 40 - 8) / 2};
 
     switch(message)
     {
     case MESSAGE_START:
-        DrawTextRec(font,
-                    "Welcome to Miner Rescue!\n"
-                    "Escape from a collapsing mine and rescue your friends on the way!\n\n"
-                    "A/Z - handbrake\n"
-                    "Down - duck\n"
-                    "Left/Right - shift weight\n"
-                    "F1 - help\n\n"
-                    "Don't roll your cart and don't hit anything!\n\n"
-                    "Press A to release the handbrake!",
-                    textRectangle,
+
+        DrawOutlined( //font,
+            "Welcome to Miner Rescue!\n"
+            "Escape from a collapsing mine and rescue your friends on the way!\n\n"
+            "A/Z - handbrake\n"
+            "Down - duck\n"
+            "Left/Right - shift weight\n"
+            "F1 - help   F2 - sound    F3 - shader\n\n"
+            "Don't roll your cart and don't hit anything!\n"
+            "Press A to release the handbrake!",
+            fullRectangle); /*,
                     8,
                     1,
                     true,
-                    WHITE);
+                    WHITE)*/
+        ;
         break;
     case MESSAGE_HELP:
-        DrawTextRec(font,
-                    "* Press Z to brake and reduce speed\n"
-                    "* Stop by a fellow miner to take him onboard\n"
-                    "* Miners are marked as red dots on the map\n"
-                    "* Beware of broken beams, press Down when you see one\n"
-                    "* Press opposite arrow to Inertia to neutralise it\n"
-                    "\nEnter - continue\nEscape - quit",
-                    textRectangle,
+        DrawOutlined( //font,
+            "* Press Z to brake and reduce speed\n"
+            "* Stop by a fellow miner to take him onboard\n"
+            "* Miners are marked as red dots on the map\n"
+            "* Beware of broken beams, press Down when you see one\n"
+            "* Press opposite arrow to Inertia to neutralise it\n"
+            "\nEnter - continue\nEscape - quit",
+            fullRectangle); /*,
                     8,
                     1,
                     true,
-                    WHITE);
+                    WHITE);*/
         break;
     case MESSAGE_OVERTURN:
-        DrawTextRec(font,
-                    "Oh no, you overturned your cart!\n\n"
-                    "Next time don't go too fast and shift weight to counter intertia.\n\n"
-                    "Enter - try again\nEscape - quit",
-                    textRectangle,
+        DrawOutlined( //font,
+            "Oh no, you overturned your cart!\n\n"
+            "Next time don't go too fast and shift weight to counter intertia.\n\n"
+            "Enter - try again     Escape - quit",
+            halfRectangle); /*,
                     8,
                     1,
                     true,
-                    WHITE);
+                    WHITE);*/
         break;
     case MESSAGE_HITBEAM:
-        DrawTextRec(font,
-                    "Oh no, you hit a support beam!\n\n"
-                    "Next time duck when you see any obstacles!\n\n"
-                    "Enter - try again\nEscape - quit",
-                    textRectangle,
+        DrawOutlined( //font,
+            "Oh no, you hit a support beam!\n\n"
+            "Next time duck when you see any obstacles!\n\n"
+            "Enter - try again     Escape - quit",
+            halfRectangle); /*,
                     8,
                     1,
                     true,
-                    WHITE);
+                    WHITE);*/
         break;
     case MESSAGE_FINISH:
         if(m_game->rescuedMiners)
@@ -502,8 +574,8 @@ void TestScreen::DrawMessage()
             sprintf(
                 timeString, "%.2d:%.2d:%.3d", elapsedMilliseconds / 60000, (elapsedMilliseconds / 1000) % 60, elapsedMilliseconds % 1000);
             int         leftBehind = m_game->m_map.numMiners - m_game->rescuedMiners;
-            auto        scoreTime  = 1 + (elapsedMilliseconds / 1000) + 10 * leftBehind; // 10 secs penalty per man
-            auto        score      = static_cast<int>(10000.0f / scoreTime); // time of 50 -> score is 200
+            auto        scoreTime  = 1 + (elapsedMilliseconds / 1000) + 20 * leftBehind; // 10 secs penalty per man
+            auto        score      = static_cast<int>(1000000.0f / scoreTime); // time of 50 -> score is 200; 04:26 -> 266
             std::string message;
             message.append("Congratulations, you've gotten out and saved some friends!\n\n");
             message.append("Your time:        ");
@@ -515,28 +587,21 @@ void TestScreen::DrawMessage()
             message.append("SCORE:            ");
             message.append(std::to_string(score));
             message.append("\n\n");
-            message.append("Enter - try again\nEscape - quit");
-            DrawTextRec(font,
-                        message.c_str(),
-                        //"Congratulations, you've gotten out and saved some friends!\n\n"
-                        //"Enter - try again\nEscape - quit",
-                        textRectangle,
-                        8,
-                        1,
-                        true,
-                        WHITE);
+            message.append("Enter - try again     Escape - quit");
+            DrawOutlined(/*font, */ message.c_str(), fullRectangle /*, 8, 1, true, WHITE*/);
         }
         else
         {
-            DrawTextRec(font,
-                        "Well, you've gotten out but didn't save anyone else! How selfish!\n\n"
-                        "Back to the mine!\n\n"
-                        "Press Enter to start again or Escape to quit.",
-                        textRectangle,
+            DrawOutlined( //font,
+                "Well, you've gotten out but didn't save anyone else! How selfish!\n\n"
+                "SCORE:            ZERO\n\n"
+                "Back to the mine!\n\n"
+                "Enter - try again     Escape - quit",
+                fullRectangle); /*,
                         8,
                         1,
                         true,
-                        WHITE);
+                        WHITE);*/
         }
         break;
     default:
@@ -586,8 +651,9 @@ void TestScreen::DrawMap()
     DrawTextureRec(Assets()->cartSprite, (Rectangle) {96, 0, 6, 6}, (Vector2) {cartX - 3, cartY - 3}, WHITE);
 }
 
-void TestScreen::DrawBar(int center, int top, int height, int width, float value)
+void TestScreen::DrawBar(int left, int top, int height, int width, float value)
 {
+    int center = left + width;
     if(value > 0)
     {
         value = std::min(value, 1.0f);
@@ -612,7 +678,7 @@ void TestScreen::DrawMiners()
             x -= 8;
             y++;
         }
-        DrawTextureRec(Assets()->minerTexture, (Rectangle) {0, 32, 9, 9}, (Vector2) {257 + x * 9, 183 + y * 9}, WHITE);
+        DrawTextureRec(Assets()->minerTexture, (Rectangle) {0, 32, 9, 9}, (Vector2) {257 + x * 7, 182 + y * 7}, WHITE);
     }
 }
 
@@ -650,8 +716,8 @@ void TestScreen::DrawTrain()
                    (Vector2) {12, 12},
                    netInertia * 45,
                    WHITE);
-    DrawBar(trainLeft + 35, barsStart, barsHeight, barLength, m_game->grossInertia);
-    DrawBar(trainLeft - 35, barsStart, barsHeight, barLength, m_game->weightAmount);
+    DrawBar(207, barsStart, barsHeight, barLength, m_game->grossInertia);
+    DrawBar(133, barsStart, barsHeight, barLength, m_game->weightAmount);
 
     DrawTexturePro(Assets()->cartSprite,
                    (Rectangle) {24, 0, 48, 24},
@@ -659,8 +725,8 @@ void TestScreen::DrawTrain()
                    (Vector2) {24, 12},
                    speed,
                    WHITE);
-    DrawBar(train2Left + 35 - barLength, barsStart, barsHeight, 2 * barLength, slope * 5);
-    DrawBar(train2Left - 35 + barLength, barsStart, barsHeight, 2 * barLength, -m_game->brakeAmount);
+    DrawBar(77 - 2 * barLength, barsStart, barsHeight, 2 * barLength, slope * 5);
+    DrawBar(5, barsStart, barsHeight, 2 * barLength, -m_game->brakeAmount);
 }
 
 void TestScreen::DrawTimer()

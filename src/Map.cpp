@@ -46,11 +46,11 @@ void Section::SupportsPosition(Vector2 supports[], float cx, float cy, float sca
         supports[2].x = cx + sin(leftTopAngle) * scaledDistance * excen;
         supports[2].y = cy + cos(leftTopAngle) * scaledDistance;
 
-        supports[3].x = cx + sin(rightAngle) * scaledDistance * excen;
-        supports[3].y = cy + cos(rightAngle) * scaledDistance;
+        supports[3].x = cx + sin(rightAngle - 0.2f) * scaledDistance * excen;
+        supports[3].y = cy + cos(rightAngle - 0.2f) * scaledDistance;
 
-        supports[4].x = cx + sin(rightTopAngle) * scaledDistance * excen;
-        supports[4].y = cy + cos(rightTopAngle) * scaledDistance;
+        supports[4].x = cx + sin(rightAngle) * scaledDistance * excen;
+        supports[4].y = cy + cos(rightAngle) * scaledDistance;
 
         supports[5].x = cx + sin(rightTopAngle) * scaledDistance * excen;
         supports[5].y = cy + cos(rightTopAngle) * scaledDistance;
@@ -242,16 +242,17 @@ void Map::Generate()
         pr = ri;
         pg = gi;
 
-        if(y > 5)
+        const int slopeAverage = 10;
+        if(y > slopeAverage)
         {
             float totaldx = 0, totaldy = 0;
-            for(int q = y - 5; q <= y; q++)
+            for(int q = y - slopeAverage; q <= y; q++)
             {
                 totaldx += (m_sections[q].m_dx - m_sections[q - 1].m_dx);
                 totaldy += (m_sections[q].m_dy - m_sections[q - 1].m_dy);
             }
-            totaldx /= 6;
-            totaldy /= 6;
+            totaldx /= slopeAverage + 1;
+            totaldy /= slopeAverage + 1;
 
             section.m_slopeX = totaldx / 10.0f;
             section.m_slopeY = -(totaldy - 0.95f) / 10.0f;

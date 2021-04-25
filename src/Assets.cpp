@@ -11,7 +11,7 @@ Assets::Assets()
         palette[i].a = 255;
     }
 
-    Color wallColor{231,156,66,255};
+    Color wallColor {231, 156, 66, 255};
     for(int i = 0; i < 14; i++)
     {
         walls[i].r = static_cast<unsigned char>(wallColor.r * (1 - i / 14.0f));
@@ -25,11 +25,18 @@ void Assets::Load()
 {
     minerTexture = LoadTexture("resources/miner.png");
     wallsTexture = LoadTexture("resources/walls.png");
-    cartTexture = LoadTexture("resources/cart.png");
-    duckTexture = LoadTexture("resources/duck.png");
-    cartSprite = LoadTexture("resources/cart-sprite.png");
-    tracks1 = LoadSound("resources/audio/tracks1.wav");
-    tracks2 = LoadSound("resources/audio/tracks2.wav");    
+    cartTexture  = LoadTexture("resources/cart.png");
+    duckTexture  = LoadTexture("resources/duck.png");
+    cartSprite   = LoadTexture("resources/cart-sprite.png");
+    tracks1      = LoadSound("resources/audio/tracks1.wav");
+    tracks2      = LoadSound("resources/audio/tracks2.wav");
+    sndStart     = LoadSound("resources/audio/start.wav");
+    sndMiss      = LoadSound("resources/audio/miss.wav");
+    sndMiner     = LoadSound("resources/audio/miner.wav");
+    sndCrash     = LoadSound("resources/audio/crash.wav");
+    sndQuake     = LoadSound("resources/audio/quake.wav");
+    sndBrake     = LoadSound("resources/audio/brake.wav");
+    sndFinish    = LoadSound("resources/audio/finish.wav");
 }
 
 void Assets::Unload()

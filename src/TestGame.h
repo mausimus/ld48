@@ -49,6 +49,8 @@ public:
     float raceTime;
     bool raceStarted;
 
+    bool ignoreBeams;
+
     Map m_map;
     TestGame();
 

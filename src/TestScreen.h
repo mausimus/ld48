@@ -16,7 +16,7 @@ constexpr int hudLeft = viewLeft;
 constexpr int hudTop = viewBottom + 10;
 
 constexpr int mapTop = 15;
-constexpr int mapLeft = 260;
+constexpr int mapLeft = 252;
 constexpr int mapWidth = 50;
 constexpr int mapHeight = 150;
 
@@ -26,12 +26,12 @@ constexpr int trainWidth = 70;
 constexpr int trainHeight = 10;
 
 constexpr int train2Left = 60;
-constexpr int barsStart = trainTop + 2;
+constexpr int barsStart = 175;//trainTop + 2;
 constexpr int barsHeight = 8;
 constexpr int barLength = 20;
 
 constexpr int timerTop = 5;
-constexpr int timerLeft = mapLeft;
+constexpr int timerLeft = mapLeft + 10;
 
 const int MESSAGE_START = 1;
 const int MESSAGE_OVERTURN = 2;
@@ -47,13 +47,12 @@ protected:
     void DrawTrain();
     void DrawStats();
     void DrawTimer();
-    void DrawBar(int center, int top, int height, int width, float value);
+    void DrawBar(int left, int top, int height, int width, float value);
+    void DrawOutlined(const char *text, Rectangle rectangle);
     void DrawMessage();
 
-    //float raceTime;
-    //float raceStart;
-    //bool raceStarted;
     int message;
+    bool soundEnabled;
 
 public:
     TestScreen(int no, TestGame* game);

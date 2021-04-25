@@ -11,20 +11,22 @@
 #define GLSL_VERSION 100
 #endif
 
-#ifdef SCANLINES
-#define SHADER_PATH "resources/shaders/glsl%i/scanlines.fs"
-#else
-#define SHADER_PATH "resources/shaders/glsl%i/base.fs"
-#endif
+//#ifdef SCANLINES
+#define SHADER_PATH_SCANLINE "resources/shaders/glsl%i/scanlines.fs"
+//#else
+#define SHADER_PATH_BASE "resources/shaders/glsl%i/base.fs"
+//#endif
 
 bool            firstFrame = true;
-Shader          shader;
+Shader          shaderBase;
+Shader          shaderScanlines;
 RenderTexture2D target;
 Rectangle       textureRect {0, 0, screenWidth, -screenHeight};
 Rectangle       renderRect {0, 0, 0, 0};
 TestGame        game;
 Vector2         topLeft {0, 0};
 double          totalTime;
+bool            scanlines = true;
 
 #ifdef DRAW_PIXELS
 Color     framebuffer[screenWidth * screenHeight];
@@ -67,8 +69,9 @@ int main()
     InitWindow(screenWidth * initialScale, screenHeight * initialScale, WINDOW_TITLE);
     InitAudioDevice();
     SetWindowMinSize(screenWidth, screenHeight);
-    shader = LoadShader(0, TextFormat(SHADER_PATH, GLSL_VERSION));
-    target = LoadRenderTexture(screenWidth, screenHeight);
+    shaderBase      = LoadShader(0, TextFormat(SHADER_PATH_BASE, GLSL_VERSION));
+    shaderScanlines = LoadShader(0, TextFormat(SHADER_PATH_SCANLINE, GLSL_VERSION));
+    target          = LoadRenderTexture(screenWidth, screenHeight);
     SetTextureFilter(target.texture, TEXTURE_FILTER);
     UpdateRenderSize(renderRect);
 #ifdef DRAW_PIXELS
@@ -107,6 +110,11 @@ void UpdateDrawFrame()
     }
 #endif
 
+    if(IsKeyPressed(KEY_F3))
+    {
+        scanlines = !scanlines;
+    }
+
     auto currentTime = GetTime();
     game.Tick(currentTime - totalTime, currentTime);
     totalTime = currentTime;
@@ -139,7 +147,7 @@ void UpdateDrawFrame()
         EndTextureMode();
 #endif
 
-        BeginShaderMode(shader);
+        BeginShaderMode(scanlines ? shaderScanlines : shaderBase);
         if(windowResized || firstFrame)
         {
             ClearBackground(BLACK);

@@ -25,6 +25,7 @@ void TestGame::Reset()
     isPaused       = true;
     raceStarted    = false;
     raceTime       = 0;
+    ignoreBeams    = false;
     m_map.Reset();
 }
 
