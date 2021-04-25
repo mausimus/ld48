@@ -1,5 +1,5 @@
-#include "TestGame.h"
-#include "TestScreen.h"
+#include "MinerGame.h"
+#include "MinerScreen.h"
 
 TestGame::TestGame() : Game()
 {

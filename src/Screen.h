@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TestGame.h"
+#include "MinerGame.h"
 #include "Assets.h"
 
 class Screen

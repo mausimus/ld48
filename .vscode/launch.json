@@ -8,7 +8,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/game",
+            "program": "${workspaceFolder}/bin/miner",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -42,10 +42,10 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "program": "${workspaceFolder}/bin/game",
+            "program": "${workspaceFolder}/bin/miner",
             "MIMode": "gdb",
             "windows": {
-              "program": "${workspaceFolder}/bin/game.exe",
+              "program": "${workspaceFolder}/bin/miner.exe",
               "miDebuggerPath": "C:/raylib/mingw/bin/gdb.exe"
             },
             "osx": {

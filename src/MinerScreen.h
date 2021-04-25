@@ -1,5 +1,5 @@
 #include "Screen.h"
-#include "TestGame.h"
+#include "MinerGame.h"
 
 constexpr int drawDistance = 13;
 

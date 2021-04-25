@@ -9,18 +9,24 @@ constexpr int   aspectV = 5;
 constexpr int   initialScale = 3;
 constexpr int   screenSize = screenWidth * screenHeight;
 
-#define WINDOW_TITLE "game"
+#define WINDOW_TITLE "miner"
 #define FULLSCREEN_KEY KEY_F
 //#define SCANLINES
 //#define TEXTURE_FILTER FILTER_BILINEAR
 #define TEXTURE_FILTER FILTER_POINT
 #define TARGET_FPS 30
 
+#ifdef PLATFORM_WEB
+#define FONT_SPACING 0
+#else
+#define FONT_SPACING 1
+#endif
+
 constexpr int frameSkip = 60 / TARGET_FPS;
 
-#define DRAW_PIXELS
+//#define DRAW_PIXELS
 #define DRAW_SHAPES
-#define DRAW_BACKGROUND
+//#define DRAW_BACKGROUND
 
 class Screen;
 class Assets;

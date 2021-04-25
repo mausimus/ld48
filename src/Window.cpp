@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "TestGame.h"
+#include "MinerGame.h"
 
 #if defined(PLATFORM_WEB)
 #include <emscripten/emscripten.h>

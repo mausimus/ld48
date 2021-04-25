@@ -2,7 +2,7 @@
 #include "Assets.h"
 #include "Screen.h"
 
-#include "TestScreen.h"
+#include "MinerScreen.h"
 
 Game::Game() : m_activeScreen {nullptr}, m_frameCounter {}, m_mouseX {}, m_mouseY {} { }
 
