@@ -1,36 +1,14 @@
-Journey to the center of the ? - style game
 
-light can get broken
-
-travel through:
-* tunnels
-* forks in the road
-* clearings? underground oases?
-
-(1) we start slow but as we get powerups we get faster and faster
-
-(2) our route is important - ancient symbols on top of tunnels/forks
-    which contain hints the player needs to crack; diff every time
-    like a puzzle, how to get to the end quicker
-
-arcade elements: avoiding rocks, water puddles
-possible some enemies later? animals? cave dwellers?
-
-GOAL: is to get to the exit, what is at the end?
-
-Starting screen: you are exploring an ancient cave system on another planet
-and the enterance has just collapsed. The only way is through!
-Lead a team of scientists through alien underground tunnels.
-
----- how do we render?
-rotate or not?
-first person or third person?
-
-would like the shape of the tunnel to change
-and entrances have different shapes
-> need animation to be smooth
-
--=-=-= plan is:
-1. prototype graphical engine: draw 
-
-make sure eyes on portraits look left/right
+* create a decent map
+* paint some extra backgrounds
+* sort out the riding model
+* fix looks of tracks and beams (palette/shading)
+* improve the mine shake/collapsing animations
+* finish end game screen
+* sounds:
+    - approaching miner
+    - miner on board
+    - releasing the brake
+    - going too fast?
+    - finish
+    - crash
