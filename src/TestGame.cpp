@@ -4,11 +4,11 @@
 TestGame::TestGame() : Game()
 {
     Reset();
+    m_map.Generate();
 }
 
 void TestGame::Reset()
 {
-    m_map.Generate();
     playerX        = 0;
     playerY        = 0;
     playerZ        = 0;
@@ -25,6 +25,7 @@ void TestGame::Reset()
     isPaused       = true;
     raceStarted    = false;
     raceTime       = 0;
+    m_map.Reset();
 }
 
 void TestGame::CreateScreens()

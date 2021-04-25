@@ -29,7 +29,7 @@ void Assets::Load()
     duckTexture = LoadTexture("resources/duck.png");
     cartSprite = LoadTexture("resources/cart-sprite.png");
     tracks1 = LoadSound("resources/audio/tracks1.wav");
-    tracks2 = LoadSound("resources/audio/tracks2.wav");
+    tracks2 = LoadSound("resources/audio/tracks2.wav");    
 }
 
 void Assets::Unload()

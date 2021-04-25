@@ -3,8 +3,8 @@
 #include "stdafx.h"
 
 
-constexpr int SECTION_POINTS = 10;
-constexpr int MAP_LENGTH = 4000;
+constexpr int SECTION_POINTS = 12;
+constexpr int MAP_LENGTH = 2000;
 constexpr int DIST_MIN = 100;
 constexpr int DIST_MAX = 120;
 constexpr int DIST_TRACK = 90;
@@ -33,11 +33,15 @@ public:
     bool        m_hasMiner;
     bool        m_hasSwitch;
     bool        m_isBroken;
+    bool        m_hasSupport;
+    bool        m_isFinish;
+
+    float m_slopeX, m_slopeY;
 
     void New();
     void Continue(Section* previous, bool startFork);
 
-    void GenerateTriangleFan(Vector2 fanPoints[], float cx, float cy, float scale, float excen);
+    void GenerateTriangleFan(Vector2 fanPoints[], float cx, float cy, float scale, float excen, int half);
     void TrackPosition(Vector2* leftTrack, Vector2* rightTrack, float cx, float cy, float scale, float excen);
     void SupportsPosition(Vector2 supports[], float cx, float cy, float scale, float excen);
     void BarPosition(Vector2* leftBar, Vector2* rightBar, float cx, float cy, float scale, float excen);
@@ -45,9 +49,15 @@ public:
 
 class Map
 {
+protected:
+    std::vector<int> m_minerLocations;
+
 public:
     Map();
-    std::vector<Section> m_sections; // TODO: forks in the road
+    std::vector<Section> m_sections;
+    int numMiners;
 
+    void GenerateSine();
     void Generate();
+    void Reset();
 };

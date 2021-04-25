@@ -38,13 +38,22 @@ void TestScreen::Unload()
 }
 
 void TestScreen::Tick(double deltaTime, double totalTime)
-{   
+{
     if(m_game->isPaused)
     {
         if(message == MESSAGE_START)
         {
             if(IsKeyPressed(KEY_A) || IsKeyPressed(KEY_ENTER))
             {
+                message          = 0;
+                m_game->isPaused = false;
+            }
+        }
+        else if(message == MESSAGE_HELP)
+        {
+            if(IsKeyPressed(KEY_ENTER))
+            {
+                // unpause
                 message          = 0;
                 m_game->isPaused = false;
             }
@@ -58,8 +67,29 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         return;
     }
 
+    if(IsKeyPressed(KEY_F1))
+    {
+        m_game->isPaused = true;
+        message          = MESSAGE_HELP;
+        return;
+    }
+
     if(IsKeyPressed(KEY_S))
         showStats = !showStats;
+
+    if(IsKeyPressed(KEY_R))
+    {
+        // restart
+        m_game->Reset();
+        message = MESSAGE_START;
+        return;
+    }
+
+    if(IsKeyPressed(KEY_L))
+    {
+        // jump to finish, cheater!
+        m_game->playerZ = MAP_LENGTH - 10;
+    }
 
     m_game->isDucking = IsKeyDown(KEY_DOWN);
 
@@ -157,8 +187,8 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     }
 
     // loop
-    if(m_game->playerZ > MAP_LENGTH - 20)
-        m_game->playerZ = 0;
+    //if(m_game->playerZ > MAP_LENGTH - 20)
+    //  m_game->playerZ = 0;
 
     // update camera location and track curvature
     auto  drawStart     = static_cast<int>(m_game->playerZ) + 1;
@@ -168,8 +198,10 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     m_game->playerX     = firstSection.m_dx + (secondSection.m_dx - firstSection.m_dx) * a;
     m_game->playerY     = firstSection.m_dy + (secondSection.m_dy - firstSection.m_dy) * a;
 
-    m_game->trackCurvature = (secondSection.m_dx - firstSection.m_dx) / 10.0f;
-    m_game->trackSlope     = -(secondSection.m_dy - firstSection.m_dy - 0.95f) / 10.0f; // (almost) constant downward
+    m_game->trackCurvature = (firstSection.m_slopeX + secondSection.m_slopeX) / 2.0f;
+    m_game->trackSlope     = (firstSection.m_slopeY + secondSection.m_slopeY) / 2.0f;
+    //m_game->trackCurvature = (secondSection.m_dx - firstSection.m_dx) / 10.0f;
+    //m_game->trackSlope     = -(secondSection.m_dy - firstSection.m_dy - 0.95f) / 10.0f; // (almost) constant downward
 
     // are we close to any miners?
     if(m_game->speed == 0)
@@ -179,15 +211,15 @@ void TestScreen::Tick(double deltaTime, double totalTime)
             auto& minerSection = m_game->m_map.m_sections[drawStart - 1 + m];
             if(minerSection.m_hasMiner)
             {
-                if(m_game->rescuedMiners < MAX_MINERS)
+                //if(m_game->rescuedMiners < MAX_MINERS)
                 {
                     m_game->rescuedMiners++;
                     minerSection.m_hasMiner = false;
                 }
-                else
+                /*else
                 {
                     // no more room!
-                }
+                }*/
             }
         }
     }
@@ -200,6 +232,11 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     if(secondSection.m_isBroken && !m_game->isDucking)
     {
         message          = MESSAGE_HITBEAM;
+        m_game->isPaused = true;
+    }
+    if(secondSection.m_isFinish)
+    {
+        message          = MESSAGE_FINISH;
         m_game->isPaused = true;
     }
 }
@@ -243,6 +280,10 @@ void TestScreen::DrawShapes()
     // we draw 14 sections from player location forward
     auto drawStart = static_cast<int>(m_game->playerZ) + 1;
     auto drawEnd   = drawStart + drawDistance;
+    if(drawEnd >= MAP_LENGTH)
+    {
+        drawEnd = MAP_LENGTH;
+    }
 
     DrawRectangle(viewLeft, viewTop, viewWidth, viewHeight, Assets()->walls[0]);
 
@@ -264,9 +305,21 @@ void TestScreen::DrawShapes()
         auto  section         = m_game->m_map.m_sections[i];
         auto  adjustedCenterX = viewCenterX - (m_game->playerX - section.m_dx) * scale * 10.0f;
         auto  adjustedCenterY = centerY + (m_game->playerY - section.m_dy) * scale * 10.0f;
-        section.GenerateTriangleFan(fan, adjustedCenterX, adjustedCenterY, scale, section.m_ecc);
-        DrawTriangleFan(fan, SECTION_POINTS + 2, Assets()->walls[i - drawStart + 1]);
 
+        if(section.m_isFinish)
+        {
+            section.GenerateTriangleFan(fan, adjustedCenterX, adjustedCenterY, scale, section.m_ecc, 1);
+            DrawTriangleFan(fan, SECTION_POINTS + 2, BLUE);
+            section.GenerateTriangleFan(fan, adjustedCenterX, adjustedCenterY, scale, section.m_ecc, 2);
+            DrawTriangleFan(fan, SECTION_POINTS + 2, GREEN);
+            //DrawRectangle(0, 0, viewWidth, viewCenterY, BLUE);
+            //DrawRectangle(0, viewCenterY, viewWidth, viewCenterY, GREEN);
+        }
+        else
+        {
+            section.GenerateTriangleFan(fan, adjustedCenterX, adjustedCenterY, scale, section.m_ecc, 0);
+            DrawTriangleFan(fan, SECTION_POINTS + 2, Assets()->walls[i - drawStart + 1]);
+        }
         Vector2 leftTrack, rightTrack;
         section.TrackPosition(&leftTrack, &rightTrack, adjustedCenterX, adjustedCenterY, scale, section.m_ecc);
         leftTracks.push_back(leftTrack);
@@ -308,7 +361,7 @@ void TestScreen::DrawShapes()
 
         DrawLineEx(leftTracks[i], leftTracks[i + 1], 1 + (numSections - i) / 3, trackColor);
         DrawLineEx(rightTracks[i], rightTracks[i + 1], 1 + (numSections - i) / 3, trackColor);
-        if((drawStart + i) % 10 == 0)
+        if(m_game->m_map.m_sections[drawStart + i].m_hasSupport)
         {
             int  thickNess = 1 + (drawDistance - i);
             auto color     = Assets()->palette[56];
@@ -394,9 +447,24 @@ void TestScreen::DrawMessage()
                     "Escape from a collapsing mine and rescue your friends on the way!\n\n"
                     "A/Z - handbrake\n"
                     "Down - duck\n"
-                    "Left/Right - shift weight\n\n"
+                    "Left/Right - shift weight\n"
+                    "F1 - help\n\n"
                     "Don't roll your cart and don't hit anything!\n\n"
                     "Press A to release the handbrake!",
+                    textRectangle,
+                    8,
+                    1,
+                    true,
+                    WHITE);
+        break;
+    case MESSAGE_HELP:
+        DrawTextRec(font,
+                    "* Press Z to brake and reduce speed\n"
+                    "* Stop by a fellow miner to take him onboard\n"
+                    "* Miners are marked as red dots on the map\n"
+                    "* Beware of broken beams, press Down when you see one\n"
+                    "* Press opposite arrow to Inertia to neutralise it\n"
+                    "\nEnter - continue\nEscape - quit",
                     textRectangle,
                     8,
                     1,
@@ -428,9 +496,30 @@ void TestScreen::DrawMessage()
     case MESSAGE_FINISH:
         if(m_game->rescuedMiners)
         {
+
+            auto elapsedMilliseconds = static_cast<int>(m_game->raceTime * 1000);
+            char timeString[15];
+            sprintf(
+                timeString, "%.2d:%.2d:%.3d", elapsedMilliseconds / 60000, (elapsedMilliseconds / 1000) % 60, elapsedMilliseconds % 1000);
+            int         leftBehind = m_game->m_map.numMiners - m_game->rescuedMiners;
+            auto        scoreTime  = 1 + (elapsedMilliseconds / 1000) + 10 * leftBehind; // 10 secs penalty per man
+            auto        score      = static_cast<int>(10000.0f / scoreTime); // time of 50 -> score is 200
+            std::string message;
+            message.append("Congratulations, you've gotten out and saved some friends!\n\n");
+            message.append("Your time:        ");
+            message.append(timeString);
+            message.append("\n");
+            message.append("Men left behind:  ");
+            message.append(std::to_string(leftBehind));
+            message.append("\n");
+            message.append("SCORE:            ");
+            message.append(std::to_string(score));
+            message.append("\n\n");
+            message.append("Enter - try again\nEscape - quit");
             DrawTextRec(font,
-                        "Congratulations, you've gotten out and saved some friends!\n\n"
-                        "Enter - try again\nEscape - quit",
+                        message.c_str(),
+                        //"Congratulations, you've gotten out and saved some friends!\n\n"
+                        //"Enter - try again\nEscape - quit",
                         textRectangle,
                         8,
                         1,
@@ -518,12 +607,12 @@ void TestScreen::DrawMiners()
     {
         int x = i;
         int y = 0;
-        if(i > 5)
+        if(i > 7)
         {
-            x -= 5;
+            x -= 8;
             y++;
         }
-        DrawTextureRec(Assets()->minerTexture, (Rectangle) {0, 32, 9, 9}, (Vector2) {257 + x * 10, 183 + y * 10}, WHITE);
+        DrawTextureRec(Assets()->minerTexture, (Rectangle) {0, 32, 9, 9}, (Vector2) {257 + x * 9, 183 + y * 9}, WHITE);
     }
 }
 

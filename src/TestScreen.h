@@ -37,6 +37,7 @@ const int MESSAGE_START = 1;
 const int MESSAGE_OVERTURN = 2;
 const int MESSAGE_HITBEAM = 3;
 const int MESSAGE_FINISH = 4;
+const int MESSAGE_HELP = 5;
 
 class TestScreen : public Screen
 {
