@@ -4,23 +4,23 @@ int x  = screenWidth / 2;
 int y  = screenHeight / 2;
 int _x = 0;
 
-Animator  animator("Test", 2, 2, 5);
-Texture2D cloudsTexture;
-Font      font;
-Sound     fxOgg;
-bool      showStats;
+Animator animator("Test", 2, 2, 5);
+//Texture2D cloudsTexture;
+Font font;
+//Sound     fxOgg;
+bool showStats;
 
 TestScreen::TestScreen(int no, TestGame* game) : Screen(no, game) { }
 
 void TestScreen::Load()
 {
-    cloudsTexture = LoadTexture("resources/clouds.png");
+    //cloudsTexture = LoadTexture("resources/clouds.png");
     //font          = LoadFontEx("resources/test1.ttf", 6, 0, 0);
     //font          = LoadFontEx("resources/fonts/prstartk.ttf", 8, 0, 0);
     font = LoadFontEx("resources/fonts/Px437_Portfolio_6x8.ttf", 8, 0, 0);
     //font          = LoadFontEx("resources/fonts/joystix.ttf", 16, 0, 0);
     //font          = LoadFont("resources/fonts/alpha_beta.png");
-    fxOgg = LoadSound("resources/sound.ogg");
+    //fxOgg = LoadSound("resources/sound.ogg");
     animator.AssignSprite(Assets()->minerTexture);
     soundEnabled = true;
 }
@@ -34,8 +34,8 @@ void TestScreen::Exit() { }
 
 void TestScreen::Unload()
 {
-    UnloadTexture(cloudsTexture);
-    UnloadFont(font);
+    //    UnloadTexture(cloudsTexture);
+    //UnloadFont(font);
 }
 
 void TestScreen::Tick(double deltaTime, double totalTime)
@@ -49,6 +49,11 @@ void TestScreen::Tick(double deltaTime, double totalTime)
                 message          = 0;
                 m_game->isPaused = false;
             }
+            else if(IsKeyPressed(KEY_F1))
+            {
+                message          = MESSAGE_HELP;
+                return;
+            }
         }
         else if(message == MESSAGE_HELP)
         {
@@ -57,6 +62,11 @@ void TestScreen::Tick(double deltaTime, double totalTime)
                 // unpause
                 message          = 0;
                 m_game->isPaused = false;
+            }
+            else if(IsKeyPressed(KEY_F1))
+            {
+                message = MESSAGE_START;
+                return;
             }
         }
         else if(IsKeyPressed(KEY_ENTER))
@@ -95,8 +105,8 @@ void TestScreen::Tick(double deltaTime, double totalTime)
     if(IsKeyPressed(KEY_L))
     {
         // jump to finish, cheater!
-        m_game->rescuedMiners = 16;
-        m_game->playerZ       = MAP_LENGTH - 10;
+        //m_game->rescuedMiners = 16;
+        m_game->playerZ       = MAP_LENGTH - 30;
     }
     if(IsKeyPressed(KEY_M))
     {
@@ -293,7 +303,7 @@ void TestScreen::Tick(double deltaTime, double totalTime)
 
 void TestScreen::DrawBackground()
 {
-    DrawTexture(cloudsTexture, 0, 0, WHITE);
+    //DrawTexture(cloudsTexture, 0, 0, WHITE);
 }
 
 void TestScreen::DrawPixels(Color* framebuffer, Rectangle* rect, bool* fullFrame)
@@ -490,8 +500,8 @@ void TestScreen::DrawOutlined(const char* text, Rectangle wrappingRectangle)
 {
     Rectangle textRectangle {wrappingRectangle.x + 5, wrappingRectangle.y + 5, wrappingRectangle.width - 10, wrappingRectangle.height - 5};
     //Rectangle outlineRectangle{wrappingRectangle.x - 1, wrappingRectangle.y - 1, wrappingRectangle.width + 2, wrappingRectangle.height+ 2};
-    DrawRectangleRoundedLines(wrappingRectangle, 0.1f, 40, 2, Color{96 - 20, 74 - 15, 67 - 12,255});
-    DrawRectangleRounded(wrappingRectangle, 0.1f, 40, Color{96,74,67,255});
+    DrawRectangleRoundedLines(wrappingRectangle, 0.1f, 40, 2, Color {96 - 20, 74 - 15, 67 - 12, 255});
+    DrawRectangleRounded(wrappingRectangle, 0.1f, 40, Color {96, 74, 67, 255});
     //DrawRectangleLines(wrappingRectangle.x - 1, wrappingRectangle.y - 1, wrappingRectangle.width + 2, wrappingRectangle.height+ 2, Color{96 - 20, 74 - 15, 67 - 12,255});
     //DrawRectangleRec(wrappingRectangle, Color{96,74,67,255});
 
@@ -514,29 +524,31 @@ void TestScreen::DrawMessage()
     case MESSAGE_START:
 
         DrawOutlined( //font,
-            "Welcome to Miner Rescue!\n"
-            "Escape from a collapsing mine and rescue your friends on the way!\n\n"
+            "Welcome to\n\n"
+            "Escape from a collapsing mine and rescue your fellow miners on the way!\n\n"
             "A/Z - handbrake\n"
             "Down - duck\n"
             "Left/Right - shift weight\n"
-            "F1 - help   F2 - sound    F3 - shader\n\n"
-            "Don't roll your cart and don't hit anything!\n"
-            "Press A to release the handbrake!",
+            "R - restart\n"
+            "F1 - help    F2 - sound    F3 - shader\n\n"
+            //"Don't roll your cart and don't hit anything!\n"
+            "Press A to release the brake and go!\nEnter - continue",
             fullRectangle); /*,
                     8,
                     1,
                     true,
                     WHITE)*/
-        ;
+        DrawTexture(Assets()->logo, 75, 10, WHITE);
         break;
     case MESSAGE_HELP:
         DrawOutlined( //font,
-            "* Press Z to brake and reduce speed\n"
-            "* Stop by a fellow miner to take him onboard\n"
-            "* Miners are marked as red dots on the map\n"
-            "* Beware of broken beams, press Down when you see one\n"
-            "* Press opposite arrow to Inertia to neutralise it\n"
-            "\nEnter - continue\nEscape - quit",
+            "Press A to release the handbrake\n"
+            "Press Z to brake and reduce speed\n"
+            "Stop by a miner to take him onboard\n"
+            "Miners are marked as red dots on map\n"
+            "Press Down to duck collapsed beams\n"
+            "Shift weight left/right against inertia\n"
+            "\nF1 - start page\nEnter - go!\nEscape - quit",
             fullRectangle); /*,
                     8,
                     1,
@@ -556,7 +568,7 @@ void TestScreen::DrawMessage()
         break;
     case MESSAGE_HITBEAM:
         DrawOutlined( //font,
-            "Oh no, you hit a support beam!\n\n"
+            "Oh no, you hit a collapsed beam!\n\n"
             "Next time duck when you see any obstacles!\n\n"
             "Enter - try again     Escape - quit",
             halfRectangle); /*,
@@ -586,9 +598,10 @@ void TestScreen::DrawMessage()
             message.append("\n");
             message.append("SCORE:            ");
             message.append(std::to_string(score));
-            message.append("\n\n");
+            message.append("\n\nThank you for playing\n\n");
             message.append("Enter - try again     Escape - quit");
             DrawOutlined(/*font, */ message.c_str(), fullRectangle /*, 8, 1, true, WHITE*/);
+            DrawTexture(Assets()->logo, 141, 94, WHITE);
         }
         else
         {

@@ -10,6 +10,7 @@ public:
     Texture2D cartTexture;
     Texture2D duckTexture;
     Texture2D cartSprite;
+    Texture2D logo;
     Color palette[64];
     Color walls[14];
 

@@ -28,6 +28,7 @@ void Assets::Load()
     cartTexture  = LoadTexture("resources/cart.png");
     duckTexture  = LoadTexture("resources/duck.png");
     cartSprite   = LoadTexture("resources/cart-sprite.png");
+    logo         = LoadTexture("resources/logo.png");
     tracks1      = LoadSound("resources/audio/tracks1.wav");
     tracks2      = LoadSound("resources/audio/tracks2.wav");
     sndStart     = LoadSound("resources/audio/start.wav");
