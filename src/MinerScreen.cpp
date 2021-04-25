@@ -31,7 +31,7 @@ void TestScreen::Tick(double deltaTime, double totalTime)
                 message          = 0;
                 m_game->isPaused = false;
             }
-            else if(IsKeyPressed(KEY_F1))
+            else if(IsKeyPressed(KEY_F1) || IsKeyPressed(KEY_ONE))
             {
                 message = MESSAGE_HELP;
                 return;
@@ -45,7 +45,7 @@ void TestScreen::Tick(double deltaTime, double totalTime)
                 message          = 0;
                 m_game->isPaused = false;
             }
-            else if(IsKeyPressed(KEY_F1))
+            else if(IsKeyPressed(KEY_F1) || IsKeyPressed(KEY_ONE))
             {
                 message = MESSAGE_START;
                 return;
@@ -60,14 +60,14 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         return;
     }
 
-    if(IsKeyPressed(KEY_F1))
+    if(IsKeyPressed(KEY_F1) || IsKeyPressed(KEY_ONE))
     {
         m_game->isPaused = true;
         message          = MESSAGE_HELP;
         return;
     }
 
-    if(IsKeyPressed(KEY_F2))
+    if(IsKeyPressed(KEY_F2) || IsKeyPressed(KEY_TWO))
     {
         soundEnabled = !soundEnabled;
     }
@@ -293,13 +293,13 @@ void TestScreen::DrawShapes()
     int centerY = viewCenterY;
 
     Vector2 fan[SECTION_POINTS + 2];
-    if(!m_game->isPaused && rand() % 4 == 0)
+    if(!m_game->isPaused && rand() % 7 == 0)
     {
         auto randOffset = rand() % 2;
         if(randOffset != 0)
         {
-            centerY += randOffset;
-            if(soundEnabled)
+            centerY += randOffset * 2;
+            if(soundEnabled && rand() % 6)
                 PlaySoundMulti(Assets()->sndQuake);
         }
     }
@@ -461,7 +461,7 @@ void TestScreen::DrawMessage()
                      "A/Z - handbrake\n"
                      "Down - duck\n"
                      "Left/Right - shift weight\n"
-                     "R - restart\n"
+                     "R - restart  F - fullscreen\n"
                      "F1 - help    F2 - sound    F3 - shader\n\n"
                      "Press A to release the brake and go!\nEnter - continue",
                      fullRectangle);

@@ -78,7 +78,7 @@ int main()
     for(int q = 0; q < screenSize; q++)
         framebuffer[q] = BLACK;
 #endif
-    //HideCursor();
+    HideCursor();
     game.Start();
     totalTime = GetTime();
 
@@ -110,7 +110,7 @@ void UpdateDrawFrame()
     }
 #endif
 
-    if(IsKeyPressed(KEY_F3))
+    if(IsKeyPressed(KEY_F3) || IsKeyPressed(KEY_THREE))
     {
         scanlines = !scanlines;
     }

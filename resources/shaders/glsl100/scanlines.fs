@@ -40,5 +40,5 @@ void main()
     
     vec4 color = texture2D(texture0, fragTexCoord);
 
-    gl_FragColor = mix(vec4(0.0, 0.0, 0.0, 0.0), color, wavePos * wavePos + 0.4);
+    gl_FragColor = mix(vec4(0.0, 0.0, 0.0, 0.0), color, wavePos * wavePos + 0.6);
 }
