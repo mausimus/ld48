@@ -13,7 +13,7 @@ constexpr float LEAN_MAX = 20.0f;
 
 constexpr int MAX_MINERS = 6;
 
-constexpr float MAX_INERTIA = 1.5f;
+constexpr float MAX_INERTIA = 1.2f;
 
 class TestGame : public Game
 {

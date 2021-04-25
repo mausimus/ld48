@@ -37,7 +37,7 @@ void Assets::Load()
     sndCrash     = LoadSound("resources/audio/crash.wav");
     sndQuake     = LoadSound("resources/audio/quake.wav");
     sndBrake     = LoadSound("resources/audio/brake.wav");
-    sndFinish    = LoadSound("resources/audio/finish.wav");
+    sndFinish    = LoadSound("resources/audio/finish.ogg");
     font         = LoadFontEx("resources/fonts/Px437_Portfolio_6x8.ttf", 8, 0, 0);
 }
 

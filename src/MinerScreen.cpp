@@ -72,8 +72,10 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         soundEnabled = !soundEnabled;
     }
 
+#ifdef DEBUG
     if(IsKeyPressed(KEY_S))
         _showStats = !_showStats;
+#endif
 
     if(IsKeyPressed(KEY_R))
     {
@@ -474,7 +476,9 @@ void TestScreen::DrawMessage()
                      "Miners are marked as red dots on map\n"
                      "Press Down to duck collapsed beams\n"
                      "Shift weight left/right against inertia\n"
-                     "\nF1 - start page\nEnter - go!\nEscape - quit",
+                     "\nF1 - start page\nEnter - go!\nEscape - quit\n\n"
+                     "                          Ludum Dare 48\n"
+                     "               github.com/mausimus/ld48",
                      fullRectangle);
         break;
     case MESSAGE_OVERTURN:
@@ -495,12 +499,17 @@ void TestScreen::DrawMessage()
             auto elapsedMilliseconds = static_cast<int>(m_game->raceTime * 1000);
             char timeString[15];
             sprintf(
-                timeString, "%.2d:%.2d:%.3d", elapsedMilliseconds / 60000, (elapsedMilliseconds / 1000) % 60, elapsedMilliseconds % 1000);
+                timeString, "%.2d:%.2d.%.3d", elapsedMilliseconds / 60000, (elapsedMilliseconds / 1000) % 60, elapsedMilliseconds % 1000);
             int         leftBehind = m_game->m_map.numMiners - m_game->rescuedMiners;
             auto        scoreTime  = 1 + (elapsedMilliseconds / 1000) + 20 * leftBehind; // 10 secs penalty per man
             auto        score      = static_cast<int>(1000000.0f / scoreTime); // time of 50 -> score is 200; 04:26 -> 266
             std::string message;
-            message.append("Congratulations, you've gotten out and saved some friends!\n\n");
+            message.append("Congratulations, you've gotten out and saved ");
+            if(leftBehind > 0)
+                message.append("some");
+            else
+                message.append("ALL");
+            message.append(" fellow miners!\n\n");
             message.append("Your time:        ");
             message.append(timeString);
             message.append("\n");
@@ -657,6 +666,6 @@ void TestScreen::DrawTimer()
 {
     auto elapsedMilliseconds = static_cast<int>(m_game->raceTime * 1000);
     char timeString[15];
-    sprintf(timeString, "%.2d:%.2d:%.3d", elapsedMilliseconds / 60000, (elapsedMilliseconds / 1000) % 60, elapsedMilliseconds % 1000);
+    sprintf(timeString, "%.2d:%.2d.%.3d", elapsedMilliseconds / 60000, (elapsedMilliseconds / 1000) % 60, elapsedMilliseconds % 1000);
     DrawTextEx(Assets()->font, timeString, (Vector2) {timerLeft, timerTop}, 8, FONT_SPACING, WHITE);
 }
