@@ -15,6 +15,8 @@ TestGame::TestGame() : Game()
     grossInertia   = 0;
     trackSlope     = 0;
     trackCurvature = 0;
+    rescuedMiners  = 0;
+    isDucking = false;
 }
 
 void TestGame::CreateScreens()

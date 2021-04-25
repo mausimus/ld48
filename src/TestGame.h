@@ -11,6 +11,8 @@ constexpr float MAX_SPEED = 50.0f;
 
 constexpr float LEAN_MAX = 20.0f;
 
+constexpr int MAX_MINERS = 6;
+
 class TestGame : public Game
 {
 protected:
@@ -33,18 +35,12 @@ public:
     float grossInertia; // curvature * speed
     float netInertia; // curvature * speed - weightAmount
 
-/*
-    float aX;
-    float aY;
-    float aZ;
-
-    float vX; // lean velocity?
-    float leanX;
-    float vY;
-    float vZ; // our velocity    
-*/
     float trackCurvature;
     float trackSlope;
+
+    bool isDucking;
+
+    int rescuedMiners;
 
     Map m_map;
     TestGame();

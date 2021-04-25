@@ -26,7 +26,10 @@ void Assets::Load()
     minerTexture = LoadTexture("resources/miner.png");
     wallsTexture = LoadTexture("resources/walls.png");
     cartTexture = LoadTexture("resources/cart.png");
+    duckTexture = LoadTexture("resources/duck.png");
     cartSprite = LoadTexture("resources/cart-sprite.png");
+    tracks1 = LoadSound("resources/audio/tracks1.wav");
+    tracks2 = LoadSound("resources/audio/tracks2.wav");
 }
 
 void Assets::Unload()

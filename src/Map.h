@@ -32,12 +32,15 @@ public:
     float       m_ecc;
     bool        m_hasMiner;
     bool        m_hasSwitch;
+    bool        m_isBroken;
 
     void New();
     void Continue(Section* previous, bool startFork);
 
     void GenerateTriangleFan(Vector2 fanPoints[], float cx, float cy, float scale, float excen);
     void TrackPosition(Vector2* leftTrack, Vector2* rightTrack, float cx, float cy, float scale, float excen);
+    void SupportsPosition(Vector2 supports[], float cx, float cy, float scale, float excen);
+    void BarPosition(Vector2* leftBar, Vector2* rightBar, float cx, float cy, float scale, float excen);
 };
 
 class Map
