@@ -1,8 +1,8 @@
-==== Miner Rescue
+## Miner Rescue
 
 A mini-game written solo in 48 hours for Ludum Dare 48 Compo (https://ldjam.com)
 
-=== Synopsis
+### Synopsis
 
 The year is 1884 and you were just going about your daily shift in a deep iron mine down south when suddenly an earthquake struck and sealed the main entrance!
 
@@ -16,4 +16,4 @@ If you'd like to compile the conde yourself, install raylib 3.7.0 (under c:/rayl
 
 __Please try the Windows release if you can__, HTML5 port is experimental and a little wonky: https://mausimus.github.io/ld48
 
-[screenshot.png]
+![screenshot](screenshot.png)
