@@ -8,7 +8,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/miner",
+            "program": "${workspaceFolder}/bin/rescue",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -42,10 +42,10 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "program": "${workspaceFolder}/bin/miner",
+            "program": "${workspaceFolder}/bin/rescue",
             "MIMode": "gdb",
             "windows": {
-              "program": "${workspaceFolder}/bin/miner.exe",
+              "program": "${workspaceFolder}/bin/rescue.exe",
               "miDebuggerPath": "C:/raylib/mingw/bin/gdb.exe"
             },
             "osx": {

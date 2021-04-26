@@ -9,7 +9,7 @@ constexpr int   aspectV = 5;
 constexpr int   initialScale = 3;
 constexpr int   screenSize = screenWidth * screenHeight;
 
-#define WINDOW_TITLE "miner"
+#define WINDOW_TITLE "miner rescue"
 #define FULLSCREEN_KEY KEY_F
 //#define SCANLINES
 //#define TEXTURE_FILTER FILTER_BILINEAR

@@ -24,7 +24,7 @@
 .PHONY: all clean
 
 # Define required raylib variables
-PROJECT_NAME       ?= miner
+PROJECT_NAME       ?= rescue
 RAYLIB_VERSION     ?= 3.5.0
 RAYLIB_API_VERSION ?= 350
 RAYLIB_PATH        ?= c:/raylib/raylib

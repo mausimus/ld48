@@ -15,14 +15,14 @@
                 "command": "C:/raylib/mingw/bin/mingw32-make.exe",
                 "args": [
                     "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=miner",
+                    "PROJECT_NAME=rescue",
                     "BUILD_MODE=DEBUG"
                 ],
             },
             "osx": {
                 "args": [
                     "RAYLIB_PATH=<path_to_raylib>/raylib",
-                    "PROJECT_NAME=miner",
+                    "PROJECT_NAME=rescue",
                     "BUILD_MODE=DEBUG"
                 ],
             },
@@ -45,13 +45,13 @@
                 "command": "C:/raylib/mingw/bin/mingw32-make.exe",
                 "args": [
                     "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=miner"
+                    "PROJECT_NAME=rescue"
                 ],
             },
             "osx": {
                 "args": [
                     "RAYLIB_PATH=<path_to_raylib>/raylib",
-                    "PROJECT_NAME=miner"
+                    "PROJECT_NAME=rescue"
                 ],
             },
             "group": "build",
