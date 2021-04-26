@@ -39,6 +39,7 @@ void Assets::Load()
     sndBrake     = LoadSound("resources/audio/brake.wav");
     sndFinish    = LoadSound("resources/audio/finish.ogg");
     font         = LoadFontEx("resources/fonts/Px437_Portfolio_6x8.ttf", 8, 0, 0);
+    musIntro     = LoadMusicStream("resources/audio/intro.ogg");
 }
 
 void Assets::Unload()

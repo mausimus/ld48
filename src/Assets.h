@@ -25,6 +25,8 @@ public:
     Sound sndBrake;
     Sound sndFinish;
 
+    Music musIntro;
+
     Font font;
 
     Assets();

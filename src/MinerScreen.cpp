@@ -22,10 +22,34 @@ void TestScreen::Unload() { }
 
 void TestScreen::Tick(double deltaTime, double totalTime)
 {
+    if(IsKeyPressed(KEY_F2) || IsKeyPressed(KEY_TWO))
+    {
+        soundEnabled = !soundEnabled;
+        if(!soundEnabled && IsMusicPlaying(Assets()->musIntro))
+        {
+            StopMusicStream(Assets()->musIntro);
+        }
+    }
+
+    if(soundEnabled)
+    {
+        UpdateMusicStream(Assets()->musIntro);
+    }
     if(m_game->isPaused)
     {
         if(message == MESSAGE_START)
         {
+            if(soundEnabled && !IsMusicPlaying(Assets()->musIntro))
+            {
+                if(!m_game->raceStarted)
+                {
+                    PlayMusicStream(Assets()->musIntro);
+                }                
+            }
+            else if(!soundEnabled && IsMusicPlaying(Assets()->musIntro))
+            {
+                StopMusicStream(Assets()->musIntro);
+            }
             if(IsKeyPressed(KEY_A) || IsKeyPressed(KEY_ENTER))
             {
                 message          = 0;
@@ -60,16 +84,16 @@ void TestScreen::Tick(double deltaTime, double totalTime)
         return;
     }
 
+    if(!m_game->isPaused && IsMusicPlaying(Assets()->musIntro))
+    {
+        StopMusicStream(Assets()->musIntro);
+    }
+
     if(IsKeyPressed(KEY_F1) || IsKeyPressed(KEY_ONE))
     {
         m_game->isPaused = true;
         message          = MESSAGE_HELP;
         return;
-    }
-
-    if(IsKeyPressed(KEY_F2) || IsKeyPressed(KEY_TWO))
-    {
-        soundEnabled = !soundEnabled;
     }
 
 #ifdef DEBUG
