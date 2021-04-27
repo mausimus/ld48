@@ -16,8 +16,6 @@ If you'd like to compile the conde yourself, install raylib 3.7.0 (under c:/rayl
 
 ### HTML5 port
 
-__Please try the Windows release if you can__, HTML5 port is experimental and a little wonky:
-
 https://mausimus.github.io/ld48
 
 ### Screenshot
