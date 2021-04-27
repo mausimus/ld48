@@ -14,7 +14,7 @@ Written in C++ using raylib targeting Windows. Also used Paint.NET, Aseprite, sf
 
 If you'd like to compile the conde yourself, install raylib 3.7.0 (under c:/raylib) with MinGW compiler and use mingw32-make to build.
 
-### HTML5 port
+### Playable in a browser
 
 https://mausimus.github.io/ld48
 
