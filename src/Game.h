@@ -16,10 +16,10 @@ constexpr int   screenSize = screenWidth * screenHeight;
 #define TEXTURE_FILTER FILTER_POINT
 #define TARGET_FPS 30
 
-#ifdef PLATFORM_WEB
-#define FONT_SPACING 0
-#else
+#ifdef __WIN32
 #define FONT_SPACING 1
+#else
+#define FONT_SPACING 0
 #endif
 
 constexpr int frameSkip = 60 / TARGET_FPS;
