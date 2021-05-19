@@ -8,7 +8,7 @@ class Screen
 protected:
     TestGame *m_game;
 
-    inline Assets* Assets() { return m_game->m_assets; }
+    inline class Assets* Assets() { return m_game->m_assets; }
 
 public:
     int m_no;
