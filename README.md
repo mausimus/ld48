@@ -2,11 +2,17 @@
 
 A mini-game written solo in 48 hours for Ludum Dare 48 Compo (https://ldjam.com)
 
+![screenshot](screenshot.png)
+
 Ranked __8th__ in graphics category and 80th overall!
 
 https://ldjam.com/events/ludum-dare/48/miner-rescue
 
 ![results](results.png)
+
+### Playable in a browser
+
+https://mausimus.github.io/ld48
 
 ### Synopsis
 
@@ -16,14 +22,6 @@ Luckily there is another exit at the bottom of the mine so without hesitation yo
 
 Enjoy a retro-style arcade game where you ride a mining cart downhill.. in the dark! You know you always wanted to!! But don’t forget to STOP to pick up fellow miners!
 
-Written in C++ using raylib targeting, Linux and HTML5. Also used Paint.NET, Aseprite, sfxr, BeepBox and Audacity.
+Written in C++ using raylib targeting Windows, Linux and HTML5. Also used Paint.NET, Aseprite, sfxr, BeepBox and Audacity.
 
 If you'd like to compile the code yourself install raylib 3.7.0 (with MinGW compiler if on Windows) and use make (or mingw32-make) to build.
-
-### Playable in a browser
-
-https://mausimus.github.io/ld48
-
-### Screenshot
-
-![screenshot](screenshot.png)
