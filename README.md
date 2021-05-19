@@ -2,17 +2,23 @@
 
 A mini-game written solo in 48 hours for Ludum Dare 48 Compo (https://ldjam.com)
 
+Ranked __8th__ in graphics category and 80th overall!
+
+https://ldjam.com/events/ludum-dare/48/miner-rescue
+
+![results](results.png)
+
 ### Synopsis
 
-The year is 1884 and you were just going about your daily shift in a deep iron mine down south when suddenly an earthquake struck and sealed the main entrance!
+The year is 1884 and you were just going about your daily shift in a deep iron mine down south when suddenly an earthquake struck and sealed the main entrance! The tremors are not stopping so you have to get out ASAP!
 
-Luckily there is another exit at the bottom of the mine so without hesitation you jump onto the nearest mining cart and brace yourself for going deep... and fast! The only way is through. But don't forget your fellow miners and let any you see hop on board!
+Luckily there is another exit at the bottom of the mine so without hesitation you jump onto the nearest mining cart and brace yourself for going deep… and fast! The only way is through.
 
-Enjoy a pseudo-3d 8-bit style simple arcade game where you ride a mining cart downhill.. in the dark! You know you always wanted to!!
+Enjoy a retro-style arcade game where you ride a mining cart downhill.. in the dark! You know you always wanted to!! But don’t forget to STOP to pick up fellow miners!
 
-Written in C++ using raylib targeting Windows. Also used Paint.NET, Aseprite, sfxr, BeepBox and Audacity.
+Written in C++ using raylib targeting, Linux and HTML5. Also used Paint.NET, Aseprite, sfxr, BeepBox and Audacity.
 
-If you'd like to compile the conde yourself, install raylib 3.7.0 (under c:/raylib) with MinGW compiler and use mingw32-make to build.
+If you'd like to compile the code yourself install raylib 3.7.0 (with MinGW compiler if on Windows) and use make (or mingw32-make) to build.
 
 ### Playable in a browser
 
